@@ -9,6 +9,7 @@ import org.xml.sax.InputSource
 import javax.xml.parsers.SAXParser
 import java.nio.charset.Charset
 import java.nio.ByteBuffer
+import java.io.InputStreamReader
 
 /**
  * Created with IntelliJ IDEA.
@@ -55,9 +56,12 @@ trait IParseResult{
   @BeanProperty
   val Title:String
 
-  def DownloadUrls():List[Tuple2[URL,Int]]
+  def DownloadUrls():List[(URL, Int)]
 
-  def getAuthorId = this.asInstanceOf[AuthorIDTrait].AuthorID
+  final def getAuthorId = this.asInstanceOf[AuthorIDTrait].AuthorID
+  final def getAuthorName = this.asInstanceOf[AuthorNameTrait].AuthorName
+
+  val SiteDescription:String
 }
 
 trait IParser {
@@ -94,13 +98,19 @@ trait IParser {
     try{
       conn = url.openConnection().asInstanceOf[HttpURLConnection]
       conn.setRequestMethod("GET")
+      val sb = new StringBuffer()
       val status = conn.getResponseCode
       if(status>=200&&status<400){
         val in = conn.getInputStream
-        val len = in.available()
-        val buff = new Array[Byte](len)
-        in.read(buff)
-        msg = new String(buff)
+        val reader = new InputStreamReader(in)
+        val buff = new Array[Char](1024)
+        var sz:Int = 0
+        do {
+          sz = reader.read(buff)
+          if (sz != -1)
+            sb.append(buff,0,sz)
+        } while(sz != -1)
+        msg = sb.toString
       }
     } finally{
       if(conn!=null)

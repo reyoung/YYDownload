@@ -3,12 +3,10 @@ package me.reyoung.yydownload.yyparser
 import reflect.BeanProperty
 import java.net.URL
 import java.net.HttpURLConnection
-import xml.{NodeSeq, Node}
+import xml.NodeSeq
 import xml.parsing.NoBindingFactoryAdapter
 import org.xml.sax.InputSource
 import javax.xml.parsers.SAXParser
-import java.nio.charset.Charset
-import java.nio.ByteBuffer
 import java.io.InputStreamReader
 
 /**

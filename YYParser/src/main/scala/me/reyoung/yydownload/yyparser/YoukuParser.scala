@@ -3,15 +3,8 @@ package me.reyoung.yydownload.yyparser
 import java.net.URL
 import reflect.BeanProperty
 import util.matching.Regex
-import xml.{NodeSeq, Xhtml, XML}
-import nu.validator.htmlparser.sax.HtmlParser
-import io.Source
-import java.io.StringReader
-import org.xml.sax.{Attributes, Locator, ContentHandler, InputSource}
-import xml.parsing.NoBindingFactoryAdapter
-import javax.xml.parsers.SAXParser
+import xml.NodeSeq
 import util.parsing.json.JSON
-import util.Random
 import collection.mutable.ListBuffer
 
 /**

@@ -3,4 +3,4 @@ YYDownload is (intended to be) a collection of application and tools parsing vid
 
 ==Why I want to develop these tools?==
 
-There are many very good tools or application to parse or download video of Youku, Youtube, etc, like [http://flvcd.com]
+There are many very good tools or application to parse or download video of Youku, Youtube, etc, like [http://flvcd.com|flvcd], [http://www.soimort.org/you-get/|youget]

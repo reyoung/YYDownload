@@ -12,7 +12,7 @@ You can build YYCli from source or get the lasted prebuilt version from web.
 
 ### Get prebuilt from web
 
-You can download prebuilt version from [here](http://YYDownload.reyoung.me/YYCli-lastest.jar)
+You can download prebuilt version from [here](http://YYDownload.reyoung.me/YYCli-latest.jar)
 
 ## How to use YYCli
 

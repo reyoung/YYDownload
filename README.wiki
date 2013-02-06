@@ -24,4 +24,6 @@ Finally, I will (maybe) develop a desktop version.
 ==User Document==
 
 There are few document for user:
-* [[doc/YYCli.md]]
+
+* YYCli Documents: [[https://github.com/reyoung/YYDownload/blob/master/doc/YYCli.md|doc/YYCli.md]]
+

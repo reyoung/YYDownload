@@ -3,4 +3,25 @@ YYDownload is (intended to be) a collection of application and tools parsing vid
 
 ==Why I want to develop these tools?==
 
-There are many very good tools or application to parse or download video of Youku, Youtube, etc, like [http://flvcd.com|flvcd], [http://www.soimort.org/you-get/|youget]
+There are many very good tools or application to parse or download video of Youku, Youtube, etc, like [[http://flvcd.com|flvcd]], [[http://www.soimort.org/you-get/|youget]], but they are:
+* don't support any phone OS
+* either don't contains cli interface nor desktop interface
+* dodn't support subscribe video list
+
+So I want to refine these. At least, I want to write a tools that good enough for me.
+
+==Develop Status==
+
+Currently, The "youku" video can be parsed and downloaded by a simple CLI program.
+
+==Develop Plan==
+Firstly, I will develop and refine a cli version of my program. These version would be able to parse only one video site, youku.
+
+Then, I will develop an phone version. It can subscribe video list, subscribe user, automatic download/remove video.
+
+Finally, I will (maybe) develop a desktop version.
+
+==User Document==
+
+There are few document for user:
+* [[doc/YYCli.md]]

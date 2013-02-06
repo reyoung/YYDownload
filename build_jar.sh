@@ -2,7 +2,7 @@
 mvn clean compile package install
 cd YYMain
 mvn assembly:single
-mv target/*with-dependencies.jar ../YYMain.jar
+mv target/*with-dependencies.jar ../YYCli.jar
 cd ..
-chmod a+x YYMain.jar
+chmod a+x YYCli.jar
 

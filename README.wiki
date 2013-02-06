@@ -1,0 +1,6 @@
+=YYDownload=
+YYDownload is (intended to be) a collection of application and tools parsing video site URL to downloads URLs, like parsing "http://v.youku.com/v_show/id_XNTExNzI5MDI0.html" to many URLs of flv files. It is written by scala and run on any platform which support jvm (Desktop(linux, windows, mac), Android). It will contains three application. YYCli, YYDesktop, YYDroid. The develop status of this project is still very early stage.
+
+==Why I want to develop these tools?==
+
+There are many very good tools or application to parse or download video of Youku, Youtube, etc, like [http://flvcd.com]

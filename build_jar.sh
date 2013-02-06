@@ -1,5 +1,5 @@
 #!/bin/bash
-mvn clean compile package
+mvn clean compile package install
 cd YYMain
 mvn assembly:single
 mv target/*with-dependencies.jar ../YYMain.jar

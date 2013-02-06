@@ -41,28 +41,37 @@ object Args{
   @Parameter(names=Array("-v"),description = "verbose mode")
   var Verbose = false
 
-  @Parameter(names=Array("-d","--definition"),description = "video definition")
+  @Parameter(names=Array("-d","--definition"),description = "video definition <NORMAL|HIGH|SUPER>")
   var Definition="normal"
+
+
+  @Parameter(names = Array("-w","--wget"),description =
+    "Using shell wget command for download")
+  var UsingWget = false
+
+  @Parameter(names = Array("-r","--result"),description = "print parsed result, not download")
+  var PrintRawResult = false
+
+  @Parameter(names = Array("-h","--help"),description = "show this message",help=true)
+  var Help = false
+
+  def getDefinition = Args.Definition.toLowerCase match {
+    case "normal" => VideoDefinition.NORMAL
+    case "high" => VideoDefinition.HIGH
+    case "super" => VideoDefinition.SUPER
+    case _ => null
+  }
 }
 
 object Main {
-  def main(args:Array[String]){
-    new JCommander(Args, args.toArray: _*)
 
-    if (Args.Verbose){
-      println("Download Video Count : "+Args.URL.size())
-    }
-    for (url <- Args.URL.toArray()){
+  def downloadProcess() {
+    for (url <- Args.URL.toArray){
       if (Args.Verbose){
         println("Downloading "+url)
       }
       val parser = new YoukuParser()
-      val definition = Args.Definition.toLowerCase() match {
-        case "normal" => VideoDefinition.NORMAL
-        case "high" => VideoDefinition.HIGH
-        case "super" => VideoDefinition.SUPER
-        case _ => null
-      }
+      val definition = Args.getDefinition
       val result = parser.parse(url.asInstanceOf[String],definition)
       var totalSz = 0
       result.DownloadUrls().foreach[Unit]((v:(URL,Int))=>{totalSz += v._2})
@@ -105,10 +114,56 @@ object Main {
         val nostop =new AtomicBoolean(false)
         d_info.extract(nostop,notify)
         val wget = new WGet(d_info,targetFile)
-//        dinfo.enableMultipart()
+        //        dinfo.enableMultipart()
         println("Saving to "+targetFN)
         wget.download(nostop,notify)
       }
     }
+  }
+
+  def printWgetCommand(){
+    for (url <- Args.URL.toArray ){
+      val parser = new YoukuParser()
+      val defi = Args.getDefinition
+      val result = parser.parse(url.asInstanceOf[String],defi)
+      var count = 0
+      for (v <- result.DownloadUrls ){
+        count +=1
+        val targetFN = Args.Outpath+"%s%d.flv".format(result.getTitle,count)
+        printf("wget '%s' -U 'Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.0)' -O '%s'\n",v._1,targetFN)
+      }
+    }
+  }
+
+  def printRawResult(){
+    var url_count = 0
+    for (url <- Args.URL.toArray){
+      url_count+=1
+      val parser = new YoukuParser
+      val defi = Args.getDefinition
+      val result = parser.parse(url.asInstanceOf[String],defi)
+      printf("=======================================\n")
+      printf("Parsed URL %d ( %s ) with %s definition\n",url_count,url.asInstanceOf[String],
+        defi.toString)
+      printf("Video Title: %s , download url info:\n",result.getTitle)
+      for (v <- result.DownloadUrls){
+        printf("%s , size %d bytes\n",v._1,v._2)
+      }
+      printf("=======================================\n")
+    }
+  }
+
+  def main(args:Array[String]){
+    val jc = new JCommander(Args, args.toArray: _*)
+    if (Args.Help){
+      jc.usage()
+    } else if (Args.UsingWget){
+      printWgetCommand()
+    } else if (Args.PrintRawResult){
+      printRawResult()
+    } else {
+      downloadProcess()
+    }
+
   }
 }

@@ -142,7 +142,12 @@ class YoukuParser extends IParser{
 
     for (s<-segs(key).asInstanceOf[List[Any]]){
       val sm = s.asInstanceOf[Map[String,Any]]
-      val no = "%02X".format(sm("no").asInstanceOf[String].toInt)
+
+      val no = if(sm("no").isInstanceOf[String]) {
+        "%02X".format(sm("no").asInstanceOf[String].toInt)
+      } else if(sm("no").isInstanceOf[Double]) {
+        "%02X".format(sm("no").asInstanceOf[Double].toInt)
+      }
       //        println(no)
       val url = "http://f.youku.com/player/getFlvPath/sid/00_%s/st/%s/fileid/%s%s%s?K=%s".format(
         no,key,vidlow,no,vidhigh,sm("k").asInstanceOf[String]

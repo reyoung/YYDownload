@@ -13,18 +13,16 @@ import java.net.URL
 
 trait IListParseResult{
   def Title():String
-  def Videos():List[IParseResult]
+  def Videos():Stream[IParseResult]
 }
 
 trait IListParser extends HttpUtil {
   val SiteDescription:String
 
-  def parse(url:URL,vd:VideoDefinition.Type,process:(Int,Int)=>Unit):IListParseResult
+  def parse(url:URL,vd:VideoDefinition.Type):IListParseResult
 
-  final def parse(url:String,vd:VideoDefinition.Type,process:(Int,Int)=>Unit):IListParseResult = parse(new URL(url),vd,process)
+  final def parse(url:String,vd:VideoDefinition.Type):IListParseResult = parse(new URL(url),vd)
   final def parse(url:String):IListParseResult =
-    parse(new URL(url), VideoDefinition.NORMAL,(id:Int,len:Int)=>{
-      print("processing %d:%d\n".format(id,len))
-    })
+    parse(new URL(url), VideoDefinition.NORMAL)
 
 }

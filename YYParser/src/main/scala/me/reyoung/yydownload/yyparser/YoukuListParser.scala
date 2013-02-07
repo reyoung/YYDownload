@@ -56,7 +56,6 @@ object YoukuListParser extends IListParser {
 
 private object YoukuListParserHelper extends HttpUtil{
   def getListIdFromUrl(url:String):Long={
-    println("Match Url is "+url)
     val Regexps = Array(
       new Regex("""http://www\.youku\.com/playlist_show/id_(\d+)(_.*|)\.html""",
       "id","postfix"),

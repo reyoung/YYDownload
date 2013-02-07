@@ -7,6 +7,8 @@ import me.reyoung.yydownload.yyparser.YoukuListParser
  *
  */
 object MainApp extends  App{
-  val youku = new YoukuListParser()
-  youku.parse("http://v.youku.com/v_show/id_XNDY3NzIyNDA4.html?f=18476474")
+  val youku = YoukuListParser
+  val result =  youku.parse("http://v.youku.com/v_show/id_XNDY3NzIyNDA4.html")
+  println(result)
+//  println("Video Count In these list "+result.Videos().length)
 }

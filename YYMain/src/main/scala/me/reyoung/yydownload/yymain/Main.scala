@@ -70,7 +70,7 @@ object Main {
       if (Args.Verbose){
         println("Downloading "+url)
       }
-      val parser = new YoukuParser()
+      val parser = YoukuParser
       val definition = Args.getDefinition
       val result = parser.parse(url.asInstanceOf[String],definition)
       var totalSz = 0
@@ -123,7 +123,7 @@ object Main {
 
   def printWgetCommand(){
     for (url <- Args.URL.toArray ){
-      val parser = new YoukuParser()
+      val parser = YoukuParser
       val defi = Args.getDefinition
       val result = parser.parse(url.asInstanceOf[String],defi)
       var count = 0
@@ -139,7 +139,7 @@ object Main {
     var url_count = 0
     for (url <- Args.URL.toArray){
       url_count+=1
-      val parser = new YoukuParser
+      val parser = YoukuParser
       val defi = Args.getDefinition
       val result = parser.parse(url.asInstanceOf[String],defi)
       printf("=======================================\n")

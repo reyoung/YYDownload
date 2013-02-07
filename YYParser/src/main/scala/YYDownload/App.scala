@@ -1,21 +1,17 @@
 package YYDownload
-import me.reyoung.yydownload.yyparser._
+//import me.reyoung.yydownload.yyparser._
+import me.reyoung.yydownload.yyparser.{VideoDefinition, ParserFactory, YoukuListParser}
+import java.net.URL
 
 /**
  * Hello world!
  *
  */
 object MainApp extends  App{
-
-  val youku = new YoukuParser()
-  println(youku.getSiteDescription)
-  val result = youku.parse("http://www.youku.com/v_show/id_XNTA3MjYwMDg4_rss.html",
-      VideoDefinition.NORMAL)
-  if(result!=null){
-    println("parse success")
-    println(result.getTitle)
-    println(result.DownloadUrls())
-    println(result.getAuthorId)
-    println(result.getAuthorName)
+  val result =  ParserFactory.parseList(new URL("http://v.youku.com/v_show/id_XNDY3MDM2Mzgw.html?f=18476474"),
+    VideoDefinition.NORMAL)
+  println(result)
+  for (r <- result.get.Videos()){
+    println(r.getTitle)
   }
 }

@@ -15,7 +15,7 @@ import collection.mutable.ListBuffer
  * EMail: reyoung@126.com
  * Blog: www.reyoung.me
  */
-class YoukuParser extends IParser{
+object YoukuParser extends IParser{
 
 
   protected class YoukuParserResult(@BeanProperty val Title:String,

@@ -44,32 +44,15 @@ object VideoDefinition extends Enumeration{
 }
 
 trait AuthorIDTrait{
-  var AuthorID:Int
+  def AuthorID():Int
 }
 trait AuthorNameTrait{
-  var AuthorName:String
+  def AuthorName():String
 }
 
-trait IParseResult{
-  @BeanProperty
-  val Title:String
+trait HttpUtil {
+  implicit def url2str(url:URL) = url.toString
 
-  def DownloadUrls():List[(URL, Int)]
-
-  final def getAuthorId = this.asInstanceOf[AuthorIDTrait].AuthorID
-  final def getAuthorName = this.asInstanceOf[AuthorNameTrait].AuthorName
-
-  val SiteDescription:String
-}
-
-trait IParser {
-
-  @BeanProperty
-  val  SiteDescription:String
-
-  def parse(url:URL,definition:VideoDefinition.Type):IParseResult
-
-  final def parse(url:String,definition:VideoDefinition.Type):IParseResult = this.parse(new URL(url),definition)
 
   final protected def retirePageDom(url:URL):NodeSeq={
     var conn:HttpURLConnection=null
@@ -117,6 +100,29 @@ trait IParser {
     msg
   }
   final protected def retirePageString(url:String):String = this.retirePageString(new URL(url))
+}
+
+trait IParseResult{
+  @BeanProperty
+  val Title:String
+
+  def DownloadUrls():List[(URL, Int)]
+
+  final def getAuthorId = this.asInstanceOf[AuthorIDTrait].AuthorID
+  final def getAuthorName = this.asInstanceOf[AuthorNameTrait].AuthorName
+
+  val SiteDescription:String
+}
+
+trait IParser extends HttpUtil{
+
+  @BeanProperty
+  val  SiteDescription:String
+
+  def parse(url:URL,definition:VideoDefinition.Type):IParseResult
+
+  final def parse(url:String,definition:VideoDefinition.Type):IParseResult = this.parse(new URL(url),definition)
+
 }
 
 

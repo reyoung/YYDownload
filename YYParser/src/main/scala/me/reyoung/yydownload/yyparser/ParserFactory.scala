@@ -14,7 +14,7 @@ object ParserFactory {
 
 //  private def defaultProcess(a:Int,b:Int){}
 
-  def parse(url:URL,definition:VideoDefinition.Type=VideoDefinition.NORMAL):Option[Any]={
+  def parse(url:URL,definition:VideoDefinition.Type):Option[Any]={
     var retv:Any = null
 
     for (p <- Parsers if retv==null ){
@@ -39,11 +39,11 @@ object ParserFactory {
     }
   }
 
-//  final def parse(url:String,definition:VideoDefinition.Type=VideoDefinition.NORMAL,process:(Int,Int)=>Unit =defaultProcess):Option[Any]={
-//    this.parse(new URL(url),definition,process)
-//  }
+  final def parse(url:String,definition:VideoDefinition.Type):Option[Any]={
+    this.parse(new URL(url),definition)
+  }
 
-  def parseVideo(url:URL,definition:VideoDefinition.Type = VideoDefinition.NORMAL) :Option[IParseResult] = {
+  def parseVideo(url:URL,definition:VideoDefinition.Type) :Option[IParseResult] = {
     var retv :IParseResult = null
     for (p <- Parsers if retv==null){
       retv = p match {
@@ -66,7 +66,7 @@ object ParserFactory {
     = this.parseVideo(new URL(url), definition)
 
 
-  def parseList(url:URL,definition:VideoDefinition.Type = VideoDefinition.NORMAL)
+  def parseList(url:URL,definition:VideoDefinition.Type)
     :Option[IListParseResult] = {
     var retv:IListParseResult = null
     for (p<-Parsers if retv == null){
@@ -86,6 +86,6 @@ object ParserFactory {
       new Some[IListParseResult](retv)
   }
 
-//  def parseList(url:String,definition:VideoDefinition.Type=VideoDefinition.NORMAL,process:(Int,Int)=>Unit=defaultProcess):Option[IListParseResult]
-//    = parseList(new URL(url),definition,process)
+  def parseList(url:String,definition:VideoDefinition.Type):Option[IListParseResult]
+    = parseList(new URL(url),definition)
 }

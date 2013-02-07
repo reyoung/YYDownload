@@ -12,9 +12,9 @@ import java.net.URL
 object ParserFactory {
   val Parsers = Array(YoukuListParser,YoukuParser)
 
-  private def defaultProcess(a:Int,b:Int){}
+//  private def defaultProcess(a:Int,b:Int){}
 
-  def parse(url:URL,definition:VideoDefinition.Type=VideoDefinition.NORMAL, process:(Int,Int)=>Unit =defaultProcess):Option[Any]={
+  def parse(url:URL,definition:VideoDefinition.Type=VideoDefinition.NORMAL):Option[Any]={
     var retv:Any = null
 
     for (p <- Parsers if retv==null ){
@@ -24,7 +24,7 @@ object ParserFactory {
             video_parser.parse(url,definition)
           }
           case list_parser:IListParser => {
-            list_parser.parse(url,definition,process)
+            list_parser.parse(url,definition)
           }
           case _ => null
         }
@@ -66,14 +66,14 @@ object ParserFactory {
     = this.parseVideo(new URL(url), definition)
 
 
-  def parseList(url:URL,definition:VideoDefinition.Type = VideoDefinition.NORMAL,process:(Int,Int)=>Unit=defaultProcess)
+  def parseList(url:URL,definition:VideoDefinition.Type = VideoDefinition.NORMAL)
     :Option[IListParseResult] = {
     var retv:IListParseResult = null
     for (p<-Parsers if retv == null){
       retv = p match {
         case _:IParser => null
         case parser:IListParser => try{
-          parser.parse(url,definition,process)
+          parser.parse(url,definition)
         } catch {
           case _ => null
         }

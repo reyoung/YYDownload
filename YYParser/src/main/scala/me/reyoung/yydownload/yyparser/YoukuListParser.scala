@@ -17,11 +17,15 @@ import collection.mutable.ListBuffer
 class YoukuListParseResult extends IListParseResult with AuthorNameTrait{
   var Title:String =null
 
-  def Videos(): List[IParseResult] = mVideoBuf.toList
+  var Definition:VideoDefinition.Type = null
+
+  def Videos(): Stream[IParseResult] = for (v <- mVideoBuf) yield {
+     YoukuParser.parse("http://v.youku.com/v_show/id_%s.html".format(v),Definition)
+  }
 
   var AuthorName: String = null
 
-  val mVideoBuf = new ListBuffer[IParseResult]()
+  var mVideoBuf:Stream[String] = null
 }
 
 
@@ -30,7 +34,7 @@ class YoukuListParseResult extends IListParseResult with AuthorNameTrait{
 object YoukuListParser extends IListParser {
   val SiteDescription: String = "Youku"
 
-  def parse(url: URL,vd:VideoDefinition.Type, process:(Int,Int)=>Unit ): IListParseResult = {
+  def parse(url: URL,vd:VideoDefinition.Type): IListParseResult = {
     val id = YoukuListParserHelper.getListIdFromUrl(url)
     id match {
       case 0 => null
@@ -40,12 +44,9 @@ object YoukuListParser extends IListParser {
         retv.Title = YoukuListParserHelper.getTitleByDom(listDom)
         retv.AuthorName = YoukuListParserHelper.getAuthorByDom(listDom)
         val count = YoukuListParserHelper.getVideoListNumber(listDom)
-        val d_urls = YoukuListParserHelper.getVideoURLs(id,count,process)
-        val youku = YoukuParser
-        for (url <- d_urls){
-          val result = youku.parse("http://v.youku.com/v_show/id_%s.html".format(url),vd)
-          retv.mVideoBuf += result
-        }
+        val d_urls = YoukuListParserHelper.getVideoURLs(id,count)
+        retv.Definition = vd
+        retv.mVideoBuf = d_urls
         retv
       }
     }
@@ -134,9 +135,8 @@ private object YoukuListParserHelper extends HttpUtil{
     number.text.toInt
   }
 
-  def getVideoURLs(id:Long,len:Int,process:(Int,Int)=>Unit):Stream[String] =
+  def getVideoURLs(id:Long,len:Int):Stream[String] =
     for (i <- (0 until len).toStream ) yield {
-      process(i+1,len)
       val v_url = "http://v.youku.com/v_playlist/f%do0p%d.html".format(id,i)
       val page = retirePageString(v_url)
       val idRegex = new Regex("var\\s+videoId2\\s*=\\s*'(\\S+)'","vid")

@@ -8,8 +8,10 @@ import java.net.URL
  *
  */
 object MainApp extends  App{
-  val result =  ParserFactory.parse(new URL("http://v.youku.com/v_show/id_XNDY3MDM2Mzgw.html?f=18476474"),
-    VideoDefinition.NORMAL,
-    (_,_)=>{})
+  val result =  ParserFactory.parseList(new URL("http://v.youku.com/v_show/id_XNDY3MDM2Mzgw.html?f=18476474"),
+    VideoDefinition.NORMAL)
   println(result)
+  for (r <- result.get.Videos()){
+    println(r.getTitle)
+  }
 }

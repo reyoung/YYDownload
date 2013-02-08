@@ -25,6 +25,8 @@ object YoukuParser extends IParser{
     val SiteDescription="Youku"
     var AuthorID:Int=0
     var AuthorName: String = null
+
+    var FileExtName:String = null
   }
 
 
@@ -42,7 +44,8 @@ object YoukuParser extends IParser{
       if(result.isDefined && result.get.isInstanceOf[Map[String,Any]]){
         val rresult = result.get.asInstanceOf[Map[String,Any]]
         val download_urls = this.getDownloadUrlById(rresult,definition)
-        val retv = new YoukuParserResult(title,download_urls)
+        val retv = new YoukuParserResult(title,download_urls._2)
+        retv.FileExtName = download_urls._1
         retv.AuthorID = this.getAuthorID(rresult)
         retv.AuthorName = this.getAuthorName(rresult)
         retv
@@ -140,7 +143,7 @@ object YoukuParser extends IParser{
     }
     val vidlow = vidSb.toString().substring(0,8)
     val vidhigh = vidSb.toString().substring(10,vidSb.length)
-
+    var file_type :String = null
     for (s<-segs(key).asInstanceOf[List[Any]]){
       val sm = s.asInstanceOf[Map[String,Any]]
 
@@ -150,7 +153,7 @@ object YoukuParser extends IParser{
         "%02X".format(sm("no").asInstanceOf[Double].toInt)
       }
       //        println(no)
-      val file_type = key match{
+      file_type = key match{
         case "flv" => "flv"
         case "hd2" => "flv"
         case "mp4" => "mp4"
@@ -161,7 +164,7 @@ object YoukuParser extends IParser{
       )
       listBuf.append((new URL(url),sm("size").asInstanceOf[String].toInt))
     }
-    listBuf.toList
+    (file_type,listBuf.toList)
   }
 
   protected def getVideoId(url:URL) ={

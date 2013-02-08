@@ -112,6 +112,8 @@ trait IParseResult{
   final def getAuthorName = this.asInstanceOf[AuthorNameTrait].AuthorName
 
   val SiteDescription:String
+
+  def FileExtName() :String
 }
 
 trait IParser extends HttpUtil{

@@ -1,9 +1,8 @@
 package me.reyoung.yydownload.yyvideo
 
-import java.io.{RandomAccessFile, FileInputStream, FileOutputStream, File}
-import java.nio.ByteBuffer
-import collection.mutable
-import collection.mutable.ArrayBuffer
+import java.io._
+import scala.Some
+import scala.Tuple2
 
 /**
  * Created with IntelliJ IDEA.
@@ -12,51 +11,6 @@ import collection.mutable.ArrayBuffer
  * Time: 5:22 PM
  * To change this template use File | Settings | File Templates.
  */
-object FlvTag {
-  val AUDIO_PACKAGE=0x08
-  val VIDEO_PACKAGE=0x09
-  val METADATA_PACKAGE=0x12
-
-  def readTag(f_in:RandomAccessFile) = {
-    val tag = f_in.readByte()
-    val szArray  = new Array[Byte](3)
-    f_in.read(szArray)
-    val sz = ByteBuffer.wrap(Array[Byte](0,szArray(0),szArray(1),szArray(2))).asIntBuffer().get()
-//    println(szArray(1))
-    val rest = new Array[Byte](sz+8+3)
-    f_in.read(rest)
-    val buf = new ArrayBuffer[Byte]()
-    buf.append(tag)
-    buf.append(szArray:_*)
-    buf.append(rest:_*)
-//    println(rest.length)
-    new FlvTag(buf.toArray)
-  }
-}
-
-class FlvTag(val Buffer:Array[Byte]) {
-  final def isAudio() = Buffer(0)==FlvTag.AUDIO_PACKAGE
-  final def isVideo() = Buffer(0)==FlvTag.VIDEO_PACKAGE
-  final def isMetaData() = Buffer(0)==FlvTag.METADATA_PACKAGE
-  final def typeFlags() = Buffer(0)
-  final def getBodyLength():Int = {
-    ByteBuffer.wrap(Array[Byte](0,Buffer(1),Buffer(2),Buffer(3))).asIntBuffer().get()
-  }
-  final def getTimestamp():Int = {
-    ByteBuffer.wrap(Array[Byte](Buffer(7),Buffer(4),Buffer(5),Buffer(6))).asIntBuffer().get()
-  }
-  final def getPrevTagSize():Int = {
-    ByteBuffer.wrap(Buffer.view(Buffer.length-4,Buffer.length).toArray).asIntBuffer().get()
-  }
-  final def asMetaData = new FlvMetaTag(this)
-}
-
-class FlvMetaTag(val tag:FlvTag) extends FlvTag(tag.Buffer){
-  assert(tag.isMetaData())
-
-
-}
-
 object FlvVideoMerger extends IVideoMerger{
   def merge(output: File, callback: (MergeStatus) => Boolean, videoFiles: File*) = {
     println("Flv Video Merger")
@@ -83,8 +37,30 @@ object FlvVideoMerger extends IVideoMerger{
       this.writeFLVHeader(f_out,header,callback)
 
       for (f_in <- inputs){
-        val tag = FlvTag.readTag(f_in)
-        println(f_in.readByte())
+        val tags:Iterator[FlvTag] = new Iterator[FlvTag]{
+          var nextflvTag = FlvTag.readTag(f_in)
+
+          def hasNext: Boolean = nextflvTag.isDefined
+
+          def next(): FlvTag = {
+            val n = nextflvTag.get
+            nextflvTag = FlvTag.readTag(f_in)
+            n
+          }
+        }
+        for(tag<-tags){
+          tag.typeFlags() match {
+            case FlvTag.METADATA_PACKAGE => {
+              val meta = tag.asMetaData
+
+              /**
+               * @todo Do with meta
+               */
+            }
+            case FlvTag.AUDIO_PACKAGE => {}
+            case FlvTag.VIDEO_PACKAGE => {}
+          }
+        }
         f_in.close()
       }
 
@@ -227,5 +203,4 @@ object FlvVideoMerger extends IVideoMerger{
       }
     }
   }
-
 }

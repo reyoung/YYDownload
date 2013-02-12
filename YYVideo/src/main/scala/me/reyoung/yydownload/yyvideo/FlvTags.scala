@@ -55,19 +55,33 @@ class FlvTag(val Buffer:Array[Byte]) {
     ByteBuffer.wrap(Buffer.view(Buffer.length-4,Buffer.length).toArray).asIntBuffer().get()
   }
 
-  final def DataContent() = Buffer.view(8+3,Buffer.length-4)
+  final def DataContent() = Buffer.view(8+3,Buffer.length-7)
   final def asMetaData = new FlvMetaTag(this)
 }
 
 class FlvMetaTag(val tag:FlvTag) extends FlvTag(tag.Buffer){
   assert(tag.isMetaData())
+
+  class ECMAArray extends mutable.HashMap[String,Any]
+
+  class AMFObject extends mutable.HashMap[String,Any] {
+    override def toString():String = {
+      val sb = new StringBuffer()
+      this.foreach( kv=>{
+        sb.append("##%s:%s\n".format(kv._1,kv._2))
+      })
+      sb.toString
+    }
+  }
+
+
   private val amfs = new Iterator[Any]{
     var Pos = 0
     val data = DataContent()
     def hasNext: Boolean = Pos < data.length
 
     def getString = {
-      Pos += 1
+//      Pos += 1
       val len = ByteBuffer.wrap(Array[Byte](0,0,data(Pos),data(Pos+1))).asIntBuffer().get()
       Pos += 2
       val sb = new StringBuffer()
@@ -76,28 +90,109 @@ class FlvMetaTag(val tag:FlvTag) extends FlvTag(tag.Buffer){
       sb.toString
     }
 
-    def getAMF() = {
+    def getInt32 = {
+      val retv = ByteBuffer.wrap(Array[Byte](data(Pos),data(Pos+1),data(Pos+2),data(Pos+3))).asIntBuffer().get()
+      Pos += 4
+      retv
+    }
+
+    def getBoolean = {
+      val retv = data(Pos)!=0
+      Pos+=1
+      retv
+    }
+
+    def getECMAArray = {
+      val count = getInt32
+      val retv = new ECMAArray()
+      for (i <- 0 until count){
+        val k = getString
+        val v = getAMF()
+        retv.+=((k,v))
+      }
+      retv
+    }
+
+    def getDouble = {
+      val doubleBuf = data.view(Pos,Pos+8)
+      Pos += 8
+      ByteBuffer.wrap(doubleBuf.toArray).asDoubleBuffer().get()
+    }
+
+    def getObject = {
+      val retv = new AMFObject()
+      val it = new Iterator[(String,Any)]{
+        var nextVar = (getString,getAMF())
+        def hasNext: Boolean = nextVar._2 != None
+
+        def next(): (String, Any) = {
+          val t = nextVar
+          nextVar = (getString,getAMF())
+          t
+        }
+      }
+      for( kv <- it){
+        retv += kv
+      }
+      retv
+    }
+
+    def getStrictArray = {
+      val arrayCount = getInt32
+      val retv = new ListBuffer[Any]
+      for(i <- 0 until arrayCount){
+        retv.append(getAMF())
+      }
+      retv
+    }
+
+    def getAMF():Any = {
       data(Pos) match {
         case 0x00 => {
           /**
            * Parse 64bit double
            */
           Pos += 1
-          val doubleBuf = data.view(Pos,Pos+8)
-          Pos += 8
-          ByteBuffer.wrap(doubleBuf.toArray).asDoubleBuffer().get()
+          getDouble
+        }
+        case 0x01 => {
+          /**
+           * Parse boolean
+           */
+          Pos += 1
+          getBoolean
         }
         case 0x02 => {
           /**
            * Parse String
            */
+          Pos += 1
           this.getString
         }
-        case 0x0a => {
+        case 0x08 => {
+          /**
+           * Parse ECMA Array
+           */
+          Pos += 1
+          this.getECMAArray
+        }
+        case 0x03 => {
           /**
            * Parse Object
            */
-          System.exit(1)
+          Pos+=1
+          this.getObject
+        }
+        case 0x0a => {
+          /**
+           * Parse Strict Array
+           */
+          Pos+=1
+          getStrictArray
+        }
+        case 0x09 =>{
+          Pos+=1
+          None
         }
         case _ => {
           println(Pos+" "+data(Pos).toInt)
@@ -111,6 +206,5 @@ class FlvMetaTag(val tag:FlvTag) extends FlvTag(tag.Buffer){
   val AMFS = new ListBuffer[Any]()
   for (amf <- amfs){
     AMFS += amf
-    println(amf)
   }
 }

@@ -40,6 +40,20 @@ case class OpenOutputFileStatus(
   }
 }
 
+case class OpenInputFileStatus(
+  val Input:File,
+  override val Status:Int
+                                ) extends MergeStatus(Status){
+  override def getStatusStr()
+    = Status match {
+    case -1 => "Input is directory"
+    case -2 => "Input is not exist"
+    case _ => super.getStatusStr()
+  }
+}
+
+case class InputVideoStatus(override val Status:Int) extends MergeStatus(Status)
+
 trait IVideoMerger {
   def merge(output:File, callback:(MergeStatus)=>Boolean, videoFiles:File*):Boolean
 }

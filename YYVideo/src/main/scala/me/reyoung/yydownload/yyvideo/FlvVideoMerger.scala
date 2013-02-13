@@ -28,9 +28,7 @@ object FlvVideoMerger extends IVideoMerger{
     val f_out = this.openOutputFile(output,callback)
     if (f_out!=null){
       var header:FlvHeader =null
-      val inputs =  for (flv <- videoFiles)
-      yield this.openInputFile(flv,callback)
-
+      val inputs =  for (flv <- videoFiles) yield this.openInputFile(flv,callback)
       for (f_in <- inputs){
         val head = this.getFLVHeader(f_in,callback)
         if(head.isDefined){
@@ -47,30 +45,50 @@ object FlvVideoMerger extends IVideoMerger{
 
       this.writeFLVHeader(f_out,header,callback)
 
+      val tagIts = new Array[Iterator[FlvTag]](inputs.length)
+      var index = 0
       for (f_in <- inputs){
         val tags:Iterator[FlvTag] = new Iterator[FlvTag]{
-          var nextflvTag = FlvTag.readTag(f_in)
+          val file = f_in
+          var nextflvTag = FlvTag.readTag(file)
 
           def hasNext: Boolean = nextflvTag.isDefined
 
           def next(): FlvTag = {
             val n = nextflvTag.get
-            nextflvTag = FlvTag.readTag(f_in)
+            nextflvTag = FlvTag.readTag(file)
             n
           }
         }
-        for(tag<-tags){
-          tag.typeFlags() match {
-            case FlvTag.METADATA_PACKAGE => {
-              val meta = tag.asMetaData
-              this.mergeMeta(meta)
-            }
-            case FlvTag.AUDIO_PACKAGE => {}
-            case FlvTag.VIDEO_PACKAGE => {}
-          }
+        tagIts(index) = tags
+        index += 1
+      }
+
+      for (tags <- tagIts){
+        val tag = tags.next()
+        assert(tag.isMetaData())
+        this.mergeMeta(tag.asMetaData)
+      }
+
+      /**
+       * Write Meta Tag
+       */
+      this.meta.write(f_out)
+
+      println(this.meta.AMFS)
+
+      for (tags <- tagIts){
+        for (tag <- tags){
+          /**
+           * Write Audio/Video Tag
+           */
         }
+      }
+
+      for (f_in <- inputs){
         f_in.close()
       }
+
 
       f_out.close()
       true

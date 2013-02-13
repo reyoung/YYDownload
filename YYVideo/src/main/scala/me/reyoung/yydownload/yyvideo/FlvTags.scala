@@ -1,6 +1,6 @@
 package me.reyoung.yydownload.yyvideo
 
-import java.io.{EOFException, RandomAccessFile}
+import java.io.{ByteArrayOutputStream, EOFException, RandomAccessFile}
 import java.nio.ByteBuffer
 import collection.mutable.{ListBuffer, ArrayBuffer}
 
@@ -212,7 +212,6 @@ class FlvMetaTag(val tag:FlvTag) extends FlvTag(tag.Buffer){
   }
 
   def merge(m:FlvMetaTag){
-    println("Need to do merge")
     for (obj <- m.AMFS){
       obj match {
         case str:String => {
@@ -236,7 +235,43 @@ class FlvMetaTag(val tag:FlvTag) extends FlvTag(tag.Buffer){
     val array2 = obj.asInstanceOf[ECMAArray]
     val obj1 = this.AMFS.find(any => any.isInstanceOf[ECMAArray])
     if (obj1.isDefined) {
-      val array1 = obj1.asInstanceOf[ECMAArray]
+      val array1 = obj1.get.asInstanceOf[ECMAArray]
+      var oldDuration:Double = 0.0
+      array2.Data.foreach(kv=>{
+        kv._1 match {
+          case "metadatacreator"|"width"|"height"|"framerate"|"hasKeyframes"|"hasVideo"|"hasAudio"
+               |"hasMetadata"|"audiosamplerate"=>{
+            /**
+             * Do Nothing
+             */
+          }
+          case "duration" => {
+            val index = array1.Data.findIndexOf(kv => kv._1 == "duration")
+            oldDuration = array1.Data(index)._2.asInstanceOf[Double]
+            val newDuration = kv._2.asInstanceOf[Double]+oldDuration
+            array1.Data.update(index,("duration",newDuration))
+          }
+          case "keyframes" => {
+
+          }
+          case _ =>{
+            println(kv._1+":"+kv._2)
+            System.exit(1)
+          }
+        }
+      })
+      array1.Data.update(array1.Data.findIndexOf(kv => kv._1 =="hasKeyframes"),
+        ("hasKeyframes",false)
+      )
+      val index = array1.Data.findIndexOf(kv => kv._1 == "keyframes")
+      if (index != -1){
+        array1.Data.remove(index,1)
+      }
+      this.AMFS.update(this.AMFS.findIndexOf(any => any.isInstanceOf[ECMAArray]),array1)
     }
+  }
+
+  def write(file:RandomAccessFile){
+
   }
 }

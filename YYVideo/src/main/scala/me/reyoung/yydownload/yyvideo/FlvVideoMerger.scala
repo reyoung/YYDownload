@@ -3,6 +3,7 @@ package me.reyoung.yydownload.yyvideo
 import java.io._
 import scala.Some
 import scala.Tuple2
+import java.nio.ByteBuffer
 
 /**
  * Created with IntelliJ IDEA.
@@ -23,8 +24,51 @@ object FlvVideoMerger extends IVideoMerger{
       meta.merge(m)
   }
 
+  val yita = 0.2
+  var file_audio_base_timestamp = 0
+  var audio_frame_avg = 0
+  var prev_audio_timestamp = 0
+
+  var file_video_base_timestamp = 0
+  var video_frame_avg = 0
+  var prev_video_timestamp = 0
+
+  def writeTagReplaceTimeStamp(file:RandomAccessFile,tag:FlvTag,newTimeStamp:Int){
+    val bytes = new Array[Byte](4)
+    ByteBuffer.wrap(bytes).putInt(newTimeStamp)
+//    ByteBuffer.wrap(Array[Byte](Buffer(7),Buffer(4),Buffer(5),Buffer(6))).asIntBuffer().get()
+    tag.Buffer.update(7,bytes(0))
+    tag.Buffer.update(4,bytes(1))
+    tag.Buffer.update(5,bytes(2))
+    tag.Buffer.update(6,bytes(3))
+    file.write(tag.Buffer)
+  }
+
+
+  def writeAudioTag(file:RandomAccessFile,tag:FlvTag){
+
+    if (tag.getTimestamp() + file_audio_base_timestamp < prev_audio_timestamp){ //! New File
+      file_audio_base_timestamp = prev_audio_timestamp + audio_frame_avg
+    }
+
+    val curTimeStamp = tag.getTimestamp() + file_audio_base_timestamp
+    audio_frame_avg = (yita*audio_frame_avg + (1-yita)*(curTimeStamp - prev_audio_timestamp)).toInt
+    prev_audio_timestamp = curTimeStamp
+    this.writeTagReplaceTimeStamp(file,tag,curTimeStamp)
+  }
+
+  def writeVideoTag(file:RandomAccessFile,tag:FlvTag){
+    if (tag.getTimestamp()+file_video_base_timestamp < prev_video_timestamp){
+      file_video_base_timestamp = prev_video_timestamp + video_frame_avg
+    }
+    val curTimeStamp = tag.getTimestamp() + file_video_base_timestamp
+    video_frame_avg = (yita*video_frame_avg + (1-yita)*(curTimeStamp-prev_video_timestamp)).toInt
+    prev_video_timestamp = curTimeStamp
+    this.writeTagReplaceTimeStamp(file,tag,curTimeStamp)
+  }
+
+
   def merge(output: File, callback: (MergeStatus) => Boolean, videoFiles: File*) = {
-    println("Flv Video Merger")
     val f_out = this.openOutputFile(output,callback)
     if (f_out!=null){
       var header:FlvHeader =null
@@ -77,9 +121,14 @@ object FlvVideoMerger extends IVideoMerger{
 
       for (tags <- tagIts){
         for (tag <- tags){
-          /**
-           * Write Audio/Video Tag
-           */
+          tag.typeFlags() match {
+            case FlvTag.AUDIO_PACKAGE =>{
+              writeAudioTag(f_out,tag)
+            }
+            case FlvTag.VIDEO_PACKAGE =>{
+              writeVideoTag(f_out,tag)
+            }
+          }
         }
       }
 

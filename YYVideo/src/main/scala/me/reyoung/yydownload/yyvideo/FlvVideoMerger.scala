@@ -67,8 +67,43 @@ object FlvVideoMerger extends IVideoMerger{
     this.writeTagReplaceTimeStamp(file,tag,curTimeStamp)
   }
 
+  object FlvMetaStatus {
+    val BEGIN_MERGE = 1
+    val END_MERGE = 2
+    val META_MERGING = 3
+    val BEGIN_WRITE_META=4
+    val END_WRITE_META= 5
+    val begin_merge = new FlvMetaStatus(BEGIN_MERGE)
+    val end_merge = new FlvMetaStatus(END_MERGE)
+    val begin_write_meta = new FlvMetaStatus(BEGIN_WRITE_META)
+    val end_write_meta = new FlvMetaStatus(END_WRITE_META)
+  }
+  case class FlvMetaStatus(override val Status:Int)extends InputVideoStatus(Status) with ParamStatus{
+    override def getStatusStr = Status match {
+      case FlvMetaStatus.BEGIN_MERGE => "Flv Begin Merge Meta"
+      case FlvMetaStatus.END_MERGE=>"Flv End Merge Meta"
+      case FlvMetaStatus.META_MERGING=>"Merging Flv Meta"
+      case FlvMetaStatus.BEGIN_WRITE_META=>"Begin Write Meta to flv file"
+      case FlvMetaStatus.END_WRITE_META=>"End Write Meta to flv file"
+      case _ => super.getStatusStr
+    }
+  }
 
-  def merge(output: File, callback: (MergeStatus) => Boolean, videoFiles: File*) = {
+  object FlvWriteTagStatus{
+    val WRITE_VIDEO_TAG = 1
+    val WRITE_AUDIO_TAG = 2
+    val write_video_tag = new FlvWriteTagStatus(WRITE_VIDEO_TAG)
+    val write_audio_tag = new FlvWriteTagStatus(WRITE_AUDIO_TAG)
+  }
+  case class FlvWriteTagStatus(override val Status:Int) extends InputVideoStatus(Status) with ParamStatus{
+     override def getStatusStr = Status match {
+       case FlvWriteTagStatus.WRITE_VIDEO_TAG => "Writing Video Tag"
+       case FlvWriteTagStatus.WRITE_AUDIO_TAG=>"Writing Audio Tag"
+       case _ => super.getStatusStr
+     }
+  }
+
+  def merge(output: File, callback: (MergeStatus) => Unit, videoFiles: File*) = {
     val f_out = this.openOutputFile(output,callback)
     if (f_out!=null){
       var header:FlvHeader =null
@@ -108,24 +143,36 @@ object FlvVideoMerger extends IVideoMerger{
         index += 1
       }
 
+      /**
+       * Merge Meta Tag
+       */
+      callback(FlvMetaStatus.begin_merge)
       for (tags <- tagIts){
         val tag = tags.next()
         assert(tag.isMetaData())
+        val status = new FlvMetaStatus(FlvMetaStatus.META_MERGING)
+        status.Param = tag
+        callback(status)
         this.mergeMeta(tag.asMetaData)
       }
+      callback(FlvMetaStatus.end_merge)
 
       /**
        * Write Meta Tag
        */
+      callback(FlvMetaStatus.begin_write_meta)
       this.meta.write(f_out)
+      callback(FlvMetaStatus.end_write_meta)
 
       for (tags <- tagIts){
         for (tag <- tags){
           tag.typeFlags() match {
             case FlvTag.AUDIO_PACKAGE =>{
+              callback(FlvWriteTagStatus.write_audio_tag)
               writeAudioTag(f_out,tag)
             }
             case FlvTag.VIDEO_PACKAGE =>{
+              callback(FlvWriteTagStatus.write_video_tag)
               writeVideoTag(f_out,tag)
             }
           }
@@ -144,7 +191,7 @@ object FlvVideoMerger extends IVideoMerger{
     }
   }
 
-  private def writeFLVHeader(f_out:RandomAccessFile,header:FlvHeader,callback:(MergeStatus)=>Boolean)={
+  private def writeFLVHeader(f_out:RandomAccessFile,header:FlvHeader,callback:(MergeStatus)=>Unit)={
     val bytes = Array[Byte](
       'F','L','V',header.Version(),header.Flags(),0,0,0,9,0,0,0,0
     )
@@ -173,7 +220,7 @@ object FlvVideoMerger extends IVideoMerger{
     }
   }
 
-  private def getFLVHeader(f_in:RandomAccessFile,callback:(MergeStatus)=>Boolean)
+  private def getFLVHeader(f_in:RandomAccessFile,callback:(MergeStatus)=>Unit)
   :Option[FlvHeader]= {
 
     def checkSignature(f_in:RandomAccessFile) = {
@@ -218,7 +265,7 @@ object FlvVideoMerger extends IVideoMerger{
     }
   }
 
-  private def openInputFile(input:File,callback:(MergeStatus)=>Boolean) = {
+  private def openInputFile(input:File,callback:(MergeStatus)=>Unit) = {
     if (input.isDirectory){
       callback(OpenInputFileStatus(input,-1))
       null
@@ -244,7 +291,7 @@ object FlvVideoMerger extends IVideoMerger{
   }
 
 
-  private def openOutputFile(output:File,callback:(MergeStatus)=>Boolean) = {
+  private def openOutputFile(output:File,callback:(MergeStatus)=>Unit) = {
     if (output.isDirectory){
       callback(OpenOutputFileStatus(output,-1))
       null

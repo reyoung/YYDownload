@@ -19,6 +19,10 @@ abstract class MergeStatus(val Status:Int){
   }
 }
 
+trait ParamStatus {
+  var Param:Any=null
+}
+
 object OpenOutputFileStatus{
   val status_map = Map(
     (-1, "it is directory"),
@@ -55,5 +59,5 @@ case class OpenInputFileStatus(
 case class InputVideoStatus(override val Status:Int) extends MergeStatus(Status)
 
 trait IVideoMerger {
-  def merge(output:File, callback:(MergeStatus)=>Boolean, videoFiles:File*):Boolean
+  def merge(output:File, callback:(MergeStatus)=>Unit, videoFiles:File*):Boolean
 }

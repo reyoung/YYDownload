@@ -3,7 +3,6 @@ package me.reyoung.yydownload.yyvideo
 import java.io.{EOFException, RandomAccessFile}
 import java.nio.ByteBuffer
 import collection.mutable.{ListBuffer, ArrayBuffer}
-import collection.mutable
 
 /**
  * Created with IntelliJ IDEA.
@@ -62,12 +61,16 @@ class FlvTag(val Buffer:Array[Byte]) {
 class FlvMetaTag(val tag:FlvTag) extends FlvTag(tag.Buffer){
   assert(tag.isMetaData())
 
-  class ECMAArray extends mutable.HashMap[String,Any]
+  class ECMAArray(){
+    val Data = new ListBuffer[(String,Any)]()
+    override def toString() = Data.toString()
+  }
 
-  class AMFObject extends mutable.HashMap[String,Any] {
+  class AMFObject(){
+    val Data = new ListBuffer[(String,Any)]()
     override def toString():String = {
       val sb = new StringBuffer()
-      this.foreach( kv=>{
+      this.Data.foreach( kv=>{
         sb.append("##%s:%s\n".format(kv._1,kv._2))
       })
       sb.toString
@@ -108,7 +111,7 @@ class FlvMetaTag(val tag:FlvTag) extends FlvTag(tag.Buffer){
       for (i <- 0 until count){
         val k = getString
         val v = getAMF()
-        retv.+=((k,v))
+        retv.Data.+=((k,v))
       }
       retv
     }
@@ -132,7 +135,7 @@ class FlvMetaTag(val tag:FlvTag) extends FlvTag(tag.Buffer){
         }
       }
       for( kv <- it){
-        retv += kv
+        retv.Data += kv
       }
       retv
     }
@@ -206,5 +209,34 @@ class FlvMetaTag(val tag:FlvTag) extends FlvTag(tag.Buffer){
   val AMFS = new ListBuffer[Any]()
   for (amf <- amfs){
     AMFS += amf
+  }
+
+  def merge(m:FlvMetaTag){
+    println("Need to do merge")
+    for (obj <- m.AMFS){
+      obj match {
+        case str:String => {
+          /**
+           * Do nothing
+           */
+        }
+        case _ => {
+          if(obj.isInstanceOf[ECMAArray]){
+            mergeECMAArray(obj)
+          } else {
+            println(obj.getClass.getName)
+            System.exit(2)
+          }
+        }
+      }
+    }
+  }
+
+  private def mergeECMAArray(obj: Any) {
+    val array2 = obj.asInstanceOf[ECMAArray]
+    val obj1 = this.AMFS.find(any => any.isInstanceOf[ECMAArray])
+    if (obj1.isDefined) {
+      val array1 = obj1.asInstanceOf[ECMAArray]
+    }
   }
 }

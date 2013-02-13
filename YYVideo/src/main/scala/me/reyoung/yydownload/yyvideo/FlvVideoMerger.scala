@@ -12,6 +12,17 @@ import scala.Tuple2
  * To change this template use File | Settings | File Templates.
  */
 object FlvVideoMerger extends IVideoMerger{
+
+  var meta:FlvMetaTag = null
+
+
+  def mergeMeta(m:FlvMetaTag){
+    if (meta==null)
+      meta = m
+    else
+      meta.merge(m)
+  }
+
   def merge(output: File, callback: (MergeStatus) => Boolean, videoFiles: File*) = {
     println("Flv Video Merger")
     val f_out = this.openOutputFile(output,callback)
@@ -52,10 +63,7 @@ object FlvVideoMerger extends IVideoMerger{
           tag.typeFlags() match {
             case FlvTag.METADATA_PACKAGE => {
               val meta = tag.asMetaData
-
-              /**
-               * @todo Do with meta
-               */
+              this.mergeMeta(meta)
             }
             case FlvTag.AUDIO_PACKAGE => {}
             case FlvTag.VIDEO_PACKAGE => {}

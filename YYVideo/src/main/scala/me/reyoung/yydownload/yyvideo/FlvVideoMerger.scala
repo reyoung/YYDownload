@@ -75,8 +75,6 @@ object FlvVideoMerger extends IVideoMerger{
        */
       this.meta.write(f_out)
 
-      println(this.meta.AMFS)
-
       for (tags <- tagIts){
         for (tag <- tags){
           /**

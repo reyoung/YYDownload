@@ -61,6 +61,8 @@ class FlvTag(val Buffer:Array[Byte]) {
 object FlvMetaTag{
   val STRING_MARKER:Byte=0x02
   val ECMA_MARKER:Byte=0x08
+  val BOOLEAN_MARKER:Byte=0x01
+  val DOUBLE_MARKER:Byte=0x00
 }
 
 class FlvMetaTag(val tag:FlvTag) extends FlvTag(tag.Buffer){
@@ -156,14 +158,14 @@ class FlvMetaTag(val tag:FlvTag) extends FlvTag(tag.Buffer){
 
     def getAMF():Any = {
       data(Pos) match {
-        case 0x00 => {
+        case FlvMetaTag.DOUBLE_MARKER => {
           /**
            * Parse 64bit double
            */
           Pos += 1
           getDouble
         }
-        case 0x01 => {
+        case FlvMetaTag.BOOLEAN_MARKER => {
           /**
            * Parse boolean
            */
@@ -276,12 +278,17 @@ class FlvMetaTag(val tag:FlvTag) extends FlvTag(tag.Buffer){
     }
   }
 
-  private def writeString(s_out:OutputStream,str:String){
-    s_out.write(Array(FlvMetaTag.STRING_MARKER))
+  private def writeStringWithoutTag(s_out:OutputStream,str:String){
     val len = str.length.toShort
     writeShort(s_out, len)
     val str_bytes = str.getBytes
     s_out.write(str_bytes)
+  }
+
+
+  private def writeString(s_out:OutputStream,str:String){
+    s_out.write(Array(FlvMetaTag.STRING_MARKER))
+    this.writeStringWithoutTag(s_out,str)
   }
 
 
@@ -301,34 +308,74 @@ class FlvMetaTag(val tag:FlvTag) extends FlvTag(tag.Buffer){
   private def writeECMAArray(s_out:OutputStream,array:ECMAArray){
     s_out.write(Array(FlvMetaTag.ECMA_MARKER))
     writeInt(s_out,array.Data.length)
-    /**
-     * Not Finish Yet
-     */
+    for(dat <- array.Data){
+      writeStringWithoutTag(s_out,dat._1)
+      this.writeObject(s_out,dat._2)
+    }
   }
 
   def write(file:RandomAccessFile){
     val b_out = new ByteArrayOutputStream()
     for (obj<-AMFS){
-      if (obj.isInstanceOf[String]){
-        val str = obj.asInstanceOf[String]
-        /**
-         * Write String
-         */
-        this.writeString(b_out,str)
-      } else if (obj.isInstanceOf[ECMAArray]){
-        val ecma = obj.asInstanceOf[ECMAArray]
-
-        /**
-         * Write Ecma
-         */
-        this.writeECMAArray(b_out,ecma)
-      }else {
-        println(obj.getClass.getSimpleName)
-      }
+      writeObject(b_out, obj)
     }
-    b_out.toByteArray.foreach(b=>{
-      printf("%02X ",b)
-    })
+    b_out.write(Array[Byte](0x00,0x00,0x09)) //! End Of Meta
 
+    file.write(FlvTag.METADATA_PACKAGE)
+    val outsz = b_out.size()
+    val bytes = new Array[Byte](4)
+    ByteBuffer.wrap(bytes).putInt(outsz)
+    file.write(bytes,1,3)
+    ByteBuffer.wrap(bytes).putInt(getTimestamp())
+    file.write(Array[Byte](bytes(3),bytes(0),bytes(1),bytes(2),0x00,0x00,0x00))
+    file.write(b_out.toByteArray)
+    ByteBuffer.wrap(bytes).putInt(outsz+11)
+    file.write(bytes)
+  }
+
+
+  private def writeBoolean(stream: OutputStream, b: Boolean){
+    stream.write(Array[Byte](FlvMetaTag.BOOLEAN_MARKER, if(b) 0x01 else 0x00))
+  }
+
+  private def writeDoubleWithoutTag(stream:OutputStream,d:Double){
+    val bytes = new Array[Byte](8)
+    ByteBuffer.wrap(bytes).putDouble(d)
+    stream.write(bytes)
+  }
+
+  private   def writeDouble(stream: OutputStream, d: Double){
+    stream.write(Array[Byte](FlvMetaTag.DOUBLE_MARKER))
+    this.writeDoubleWithoutTag(stream,d)
+  }
+
+  private def writeObject(b_out: OutputStream, obj: Any) {
+    if (obj.isInstanceOf[String]) {
+      val str = obj.asInstanceOf[String]
+
+      /**
+       * Write String
+       */
+      this.writeString(b_out, str)
+    } else if (obj.isInstanceOf[ECMAArray]) {
+      val ecma = obj.asInstanceOf[ECMAArray]
+
+      /**
+       * Write Ecma
+       */
+      this.writeECMAArray(b_out, ecma)
+    } else if (obj.isInstanceOf[Boolean]){
+      /**
+       * Write Boolean
+       */
+      this writeBoolean(b_out, obj.asInstanceOf[Boolean])
+    } else if (obj.isInstanceOf[Double]){
+      /**
+       * Write Double
+       */
+      this writeDouble(b_out, obj.asInstanceOf[Double])
+    } else {
+      println(obj.getClass.getSimpleName)
+    }
   }
 }

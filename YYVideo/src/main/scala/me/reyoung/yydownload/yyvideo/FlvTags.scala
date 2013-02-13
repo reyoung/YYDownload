@@ -1,7 +1,7 @@
 package me.reyoung.yydownload.yyvideo
 
-import java.io.{ByteArrayOutputStream, EOFException, RandomAccessFile}
-import java.nio.ByteBuffer
+import java.io.{OutputStream, ByteArrayOutputStream, EOFException, RandomAccessFile}
+import java.nio.{ShortBuffer, ByteBuffer}
 import collection.mutable.{ListBuffer, ArrayBuffer}
 
 /**
@@ -56,6 +56,11 @@ class FlvTag(val Buffer:Array[Byte]) {
 
   final def DataContent() = Buffer.view(8+3,Buffer.length-7)
   final def asMetaData = new FlvMetaTag(this)
+}
+
+object FlvMetaTag{
+  val STRING_MARKER:Byte=0x02
+  val ECMA_MARKER:Byte=0x08
 }
 
 class FlvMetaTag(val tag:FlvTag) extends FlvTag(tag.Buffer){
@@ -165,14 +170,14 @@ class FlvMetaTag(val tag:FlvTag) extends FlvTag(tag.Buffer){
           Pos += 1
           getBoolean
         }
-        case 0x02 => {
+        case FlvMetaTag.STRING_MARKER => {
           /**
            * Parse String
            */
           Pos += 1
           this.getString
         }
-        case 0x08 => {
+        case FlvMetaTag.ECMA_MARKER => {
           /**
            * Parse ECMA Array
            */
@@ -271,7 +276,59 @@ class FlvMetaTag(val tag:FlvTag) extends FlvTag(tag.Buffer){
     }
   }
 
+  private def writeString(s_out:OutputStream,str:String){
+    s_out.write(Array(FlvMetaTag.STRING_MARKER))
+    val len = str.length.toShort
+    writeShort(s_out, len)
+    val str_bytes = str.getBytes
+    s_out.write(str_bytes)
+  }
+
+
+
+  private def writeShort(s_out: OutputStream, len: Short) {
+    val bytes = new Array[Byte](2)
+    ByteBuffer.wrap(bytes).putShort(len)
+    s_out.write(bytes)
+  }
+
+  private def writeInt(s_out:OutputStream, i:Int){
+    val bytes = new Array[Byte](4)
+    ByteBuffer.wrap(bytes).putInt(i)
+    s_out.write(bytes)
+  }
+
+  private def writeECMAArray(s_out:OutputStream,array:ECMAArray){
+    s_out.write(Array(FlvMetaTag.ECMA_MARKER))
+    writeInt(s_out,array.Data.length)
+    /**
+     * Not Finish Yet
+     */
+  }
+
   def write(file:RandomAccessFile){
+    val b_out = new ByteArrayOutputStream()
+    for (obj<-AMFS){
+      if (obj.isInstanceOf[String]){
+        val str = obj.asInstanceOf[String]
+        /**
+         * Write String
+         */
+        this.writeString(b_out,str)
+      } else if (obj.isInstanceOf[ECMAArray]){
+        val ecma = obj.asInstanceOf[ECMAArray]
+
+        /**
+         * Write Ecma
+         */
+        this.writeECMAArray(b_out,ecma)
+      }else {
+        println(obj.getClass.getSimpleName)
+      }
+    }
+    b_out.toByteArray.foreach(b=>{
+      printf("%02X ",b)
+    })
 
   }
 }

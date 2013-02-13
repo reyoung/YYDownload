@@ -12,7 +12,7 @@ import java.nio.ByteBuffer
  * Time: 5:22 PM
  * To change this template use File | Settings | File Templates.
  */
-object FlvVideoMerger extends IVideoMerger{
+class FlvVideoMerger extends IVideoMerger{
 
   var meta:FlvMetaTag = null
 

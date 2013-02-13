@@ -9,6 +9,8 @@ import java.util.concurrent.atomic.AtomicBoolean
 import com.github.axet.wget.info.DownloadInfo
 import com.github.axet.wget.info.URLInfo.States
 import com.github.axet.wget.info.DownloadInfo.Part
+import collection.mutable.ListBuffer
+import me.reyoung.yydownload.yyvideo.{OpenOutputFileStatus, FlvVideoMerger}
 
 //import me.reyoung.yydownload.yyparser.YoukuParser
 
@@ -29,8 +31,8 @@ object Args{
     }
   }
 
-  @Parameter(names = Array("-m"),description = "enable multithread download")
-  var Multithread = false
+//  @Parameter(names = Array("-m"),description = "enable multithread download")
+//  var Multithread = false
 
   @Parameter(description = "video url",required = true)
   var URL:java.util.List[String] = null
@@ -60,6 +62,9 @@ object Args{
 
   @Parameter(names = Array("-V","--video"),description = "explicit download video")
   var Video = false
+
+  @Parameter(names = Array("-m","--merge"),description = "merge the download video")
+  var Merge = false
 
   def getDefinition = Args.Definition.toLowerCase match {
     case "normal" => VideoDefinition.NORMAL
@@ -122,6 +127,46 @@ object Main {
           //        dinfo.enableMultipart()
           println("Saving to "+targetFN)
           wget.download(nostop,notify)
+        }
+        if(Args.Merge){
+          pr.FileExtName() match {
+            case "flv"=>{
+              val outputs = new ListBuffer[File]
+              for (count <- 1 to pr.DownloadUrls().length) {
+                val ofn =Args.Outpath+"%s%d.%s".format(pr.getTitle,count,pr.FileExtName)
+                outputs.+=(new File(ofn))
+              }
+              val ofn = Args.Outpath+"%s.%s".format(pr.getTitle,pr.FileExtName)
+              val flvMerger = new FlvVideoMerger
+              var d_count=0
+              flvMerger.merge(new File(ofn),status =>{
+                status match {
+                  case _:OpenOutputFileStatus=>{
+                    println("Start merging...\n")
+                  }
+                  case _=>{
+                    if(status.isOk()){
+                      d_count+=1
+                      print(".")
+                      if(d_count%75==0){
+                        d_count = 0
+                        println()
+                      }
+                    } else {
+                      println("Fatal Error! %s \n",status.getStatusStr())
+                      System.exit(1)
+                    }
+
+                  }
+                }
+              },outputs.toSeq:_*)
+              println()
+              outputs.foreach(f=>f.delete())
+            }
+            case _ => {
+              println("Not Support Merge This Video")
+            }
+          }
         }
       }
 

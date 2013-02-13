@@ -247,7 +247,7 @@ class FlvMetaTag(val tag:FlvTag) extends FlvTag(tag.Buffer){
       array2.Data.foreach(kv=>{
         kv._1 match {
           case "metadatacreator"|"width"|"height"|"framerate"|"hasKeyframes"|"hasVideo"|"hasAudio"
-               |"hasMetadata"|"audiosamplerate"=>{
+               |"hasMetadata"|"audiosamplerate"|"canSeekToEnd"=>{
             /**
              * Do Nothing
              */

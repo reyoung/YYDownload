@@ -138,6 +138,7 @@ object Main {
               }
               val ofn = Args.Outpath+"%s.%s".format(pr.getTitle,pr.FileExtName)
               val flvMerger = new FlvVideoMerger
+              var d_count=0
               flvMerger.merge(new File(ofn),status =>{
                 status match {
                   case _:OpenOutputFileStatus=>{
@@ -145,7 +146,12 @@ object Main {
                   }
                   case _=>{
                     if(status.isOk()){
-                      println(".")
+                      d_count+=1
+                      print(".")
+                      if(d_count%75==0){
+                        d_count = 0
+                        println()
+                      }
                     } else {
                       println("Fatal Error! %s \n",status.getStatusStr())
                       System.exit(1)
@@ -153,6 +159,7 @@ object Main {
                   }
                 }
               },outputs.toSeq:_*)
+              outputs.foreach(f=>f.delete())
             }
             case _ => {
               println("Not Support Merge This Video")

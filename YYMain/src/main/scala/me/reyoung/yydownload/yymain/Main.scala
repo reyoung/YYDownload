@@ -156,9 +156,11 @@ object Main {
                       println("Fatal Error! %s \n",status.getStatusStr())
                       System.exit(1)
                     }
+
                   }
                 }
               },outputs.toSeq:_*)
+              println()
               outputs.foreach(f=>f.delete())
             }
             case _ => {

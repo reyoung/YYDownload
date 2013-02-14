@@ -10,7 +10,7 @@ import com.github.axet.wget.info.DownloadInfo
 import com.github.axet.wget.info.URLInfo.States
 import com.github.axet.wget.info.DownloadInfo.Part
 import collection.mutable.ListBuffer
-import me.reyoung.yydownload.yyvideo.{OpenOutputFileStatus, FlvVideoMerger}
+import me.reyoung.yydownload.yyvideo.{IVideoMerger, Mp4VideoMerger, OpenOutputFileStatus, FlvVideoMerger}
 
 //import me.reyoung.yydownload.yyparser.YoukuParser
 
@@ -129,44 +129,49 @@ object Main {
           wget.download(nostop,notify)
         }
         if(Args.Merge){
-          pr.FileExtName() match {
+          val merger:IVideoMerger = pr.FileExtName() match {
             case "flv"=>{
-              val outputs = new ListBuffer[File]
-              for (count <- 1 to pr.DownloadUrls().length) {
-                val ofn =Args.Outpath+"%s%d.%s".format(pr.getTitle,count,pr.FileExtName)
-                outputs.+=(new File(ofn))
-              }
-              val ofn = Args.Outpath+"%s.%s".format(pr.getTitle,pr.FileExtName)
-              val flvMerger = new FlvVideoMerger
-              var d_count=0
-              flvMerger.merge(new File(ofn),status =>{
-                status match {
-                  case _:OpenOutputFileStatus=>{
-                    println("Start merging...\n")
-                  }
-                  case _=>{
-                    if(status.isOk()){
-                      d_count+=1
-                      print(".")
-                      if(d_count%75==0){
-                        d_count = 0
-                        println()
-                      }
-                    } else {
-                      println("Fatal Error! %s \n",status.getStatusStr())
-                      System.exit(1)
-                    }
-
-                  }
-                }
-              },outputs.toSeq:_*)
-              println()
-              outputs.foreach(f=>f.delete())
+              new FlvVideoMerger
+            }
+            case "mp4"=>{
+              new Mp4VideoMerger
             }
             case _ => {
               println("Not Support Merge This Video")
+              System.exit(1)
+              null
             }
           }
+          val outputs = new ListBuffer[File]
+          for (count <- 1 to pr.DownloadUrls().length) {
+            val ofn =Args.Outpath+"%s%d.%s".format(pr.getTitle,count,pr.FileExtName)
+            outputs.+=(new File(ofn))
+          }
+          val ofn = Args.Outpath+"%s.%s".format(pr.getTitle,pr.FileExtName)
+          var d_count=0
+          merger.merge(new File(ofn),status =>{
+            status match {
+              case _:OpenOutputFileStatus=>{
+                println("Start merging...\n")
+              }
+              case _=>{
+                if(status.isOk()){
+                  d_count+=1
+                  print(".")
+                  if(d_count%75==0){
+                    d_count = 0
+                    println()
+                  }
+                } else {
+                  println("Fatal Error! %s \n",status.getStatusStr())
+                  System.exit(1)
+                }
+
+              }
+            }
+          },outputs.toSeq:_*)
+          println()
+          outputs.foreach(f=>f.delete())
         }
       }
 

@@ -2,7 +2,7 @@ package me.reyoung.yydownload.yyvideomerger
 
 import me.reyoung.yydownload.yyvideomerger.Main.Args
 import java.io.File
-import me.reyoung.yydownload.yyvideo.{MergeStatus, FlvVideoMerger, IVideoMerger}
+import me.reyoung.yydownload.yyvideo.{Mp4VideoMerger, MergeStatus, FlvVideoMerger, IVideoMerger}
 
 /**
  * Created with IntelliJ IDEA.
@@ -38,6 +38,9 @@ object MainHandler {
   def getMerger(extName:String):IVideoMerger = extName match {
     case "flv" => {
       new FlvVideoMerger
+    }
+    case "mp4" => {
+      new Mp4VideoMerger
     }
     case _ => {
       throw new RuntimeException("Cannot merge such type video")

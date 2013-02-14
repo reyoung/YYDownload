@@ -13,6 +13,7 @@
         <module>YYMain</module>
         <!-- <module>untitled</module> -->
         <module>YYVideo</module>
+        <module>YYVideoMerger</module>
     </modules>
     
 </project>

@@ -12,10 +12,14 @@ import com.beust.jcommander.{JCommander, Parameter}
 object Main  {
   object Args{
     @Parameter(description = "input video files",required = true)
-    var URL:java.util.List[String] = null
+    var InputFiles:java.util.List[String] = null
 
     @Parameter(names=Array("-h","--help"),description = "show usage",help = true)
     var Help:Boolean=false
+
+    @Parameter(names=Array("-o","--output"),description = "output file name",required = true)
+    var OutputFileName:String=null
+
   }
   def main(args:Array[String]) {
     val jc = new JCommander(Args,args:_*)
@@ -25,6 +29,7 @@ object Main  {
       /**
        * Main Handler
        */
+      MainHandler.handle()
     }
   }
 }

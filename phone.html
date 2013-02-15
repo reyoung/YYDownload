@@ -10,17 +10,26 @@
     <script type="text/javascript" src="https://raw.github.com/jeromeetienne/jquery-qrcode/master/jquery.qrcode.min.js"></script>
 	</head>
 	<body>
-	   <header>
-      <div class="container">
-        <h1>YYDownload</h1>
-        <h2>tools download youku video</h2>
-     </header>
-     <div class="container">
-       <section id="main_content">
+    <div id="header_wrap" class="outer">
+      <div class="inner">
+        <a id="forkme_banner" href="https://github.com/reyoung/YYDownload">View on GitHub</a>
+        <h1 id="project_title">YYDownload</h1>
+        <h2 id="project_tagline">tool download youku video</h2>
+
+        <section id="downloads">
+          <a href="https://github.com/reyoung/YYDownload/zipball/master" class="btn zip_download_link">Download as .zip</a>
+          <a href="https://github.com/reyoung/YYDownload/tarball/master" class="btn tar_download_link">Download as .tar.gz</a>
+        </section>
+      </div>
+    </div>
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content"  class="inner">
            <h2>1>> parse your video address here:</h2>
            <input type="text" name="url" class="url_input"/>
            <div class="qrcode_wrapper">
+            <div >
             <div id="qrcode"></div>
+            </div>
             <h2>2>> use YYDroid download it!</h2>
            </div>
        </section>

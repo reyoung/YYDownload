@@ -1,6 +1,6 @@
 package me.reyoung.YYDroid.main
 
-import me.reyoung.YYDroid.util.LogTag
+import me.reyoung.YYDroid.util.{DatabaseUtil, LogTag}
 import android.os.Bundle
 import android.util.Log
 import android.app.Activity
@@ -8,6 +8,8 @@ import me.reyoung.R
 import android.widget.Button
 import android.view.View.OnClickListener
 import android.view.View
+import android.content.Intent
+import com.j256.ormlite.android.apptools.OrmLiteBaseActivity
 
 /**
  * Created with IntelliJ IDEA.
@@ -16,13 +18,14 @@ import android.view.View
  * Time: 2:11 PM
  * To change this template use File | Settings | File Templates.
  */
-class MainActivity extends Activity with LogTag{
+class MainActivity extends OrmLiteBaseActivity[DatabaseUtil] with LogTag{
 
 
   override def onCreate(bundle:Bundle){
     super.onCreate(bundle)
     Log.d(LogTag,"On Create")
     this.setContentView(R.layout.main)
+    val act = this
     val NewQRCode = this.findViewById(R.id.main_new_qr_code).asInstanceOf[Button]
     NewQRCode.setOnClickListener(new OnClickListener{
       def onClick(view: View) {
@@ -49,11 +52,11 @@ class MainActivity extends Activity with LogTag{
     FM.setOnClickListener(new OnClickListener {
       def onClick(view: View) {
         Log.d(LogTag,"On Feed Management Click")
+        val intent = new Intent()
+        intent.setClass(act,classOf[FeedManageActivity])
+        act.startActivity(intent)
       }
 
-      /**
-       * @todo Feed Management Redirect
-       */
     })
 
     val about = this.findViewById(R.id.main_about_me).asInstanceOf[Button]

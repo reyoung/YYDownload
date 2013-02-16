@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/feed_opmenu_add"
+            android:title="@string/add_feed"
+            >
+    </item>
+    <item android:id="@+id/feed_opmenu_opendir"
+            android:title="@string/open_output_directory"
+            >
+    </item>
+    <item android:id="@+id/feed_opmenu_setting"
+          android:title="@string/settings"></item>
+</menu>

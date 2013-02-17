@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="horizontal"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent">
+
+    <EditText
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:text="New EditText"
+            android:id="@id/feed_mgr_subscribe_dlg_edittext"
+            android:layout_weight="1"
+            />
+    <Button
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:text="Scan QR Code"
+            android:id="@id/feed_mgr_subscribe_dlg_qrbtn"
+            android:layout_weight="3"
+            />
+</LinearLayout>

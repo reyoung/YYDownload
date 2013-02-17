@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="main_new_qr_code" type="id">main_new_qr_code</item>
+    <item name="main_download_management" type="id">main_download_management</item>
+    <item name="main_feed_management" type="id">main_feed_management</item>
+    <item name="main_about_me" type="id">main_about_me</item>
+    <item name="feed_opmenu_add" type="id">feed_opmenu_add</item>
+    <item name="feed_opmenu_opendir" type="id">feed_opmenu_opendir</item>
+    <item name="feed_opmenu_setting" type="id">feed_opmenu_setting</item>
+    <item name="feed_mgr_subscribe_dlg_edittext" type="id">feed_mgr_subscribe_dlg_edittext</item>
+    <item name="feed_mgr_subscribe_dlg_qrbtn" type="id">feed_mgr_subscribe_dlg_qrbtn</item>
+</resources>

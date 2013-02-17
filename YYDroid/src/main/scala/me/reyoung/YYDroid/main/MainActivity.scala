@@ -8,7 +8,7 @@ import me.reyoung.R
 import android.widget.Button
 import android.view.View.OnClickListener
 import android.view.View
-import android.content.Intent
+import android.content.{Context, Intent}
 import com.j256.ormlite.android.apptools.OrmLiteBaseActivity
 
 /**
@@ -24,6 +24,10 @@ class MainActivity extends OrmLiteBaseActivity[DatabaseUtil] with LogTag{
   override def onCreate(bundle:Bundle){
     super.onCreate(bundle)
     Log.d(LogTag,"On Create")
+//    val ctor = classOf[DatabaseUtil].getConstructor(classOf[Context])
+//    Log.i(LogTag,"Constructor Method "+ctor)
+//    val tmp = ctor.newInstance(this)
+//    Log.i(LogTag,"New Instance Is "+ tmp)
     this.setContentView(R.layout.main)
     val act = this
     val NewQRCode = this.findViewById(R.id.main_new_qr_code).asInstanceOf[Button]

@@ -7,4 +7,6 @@
     <item name="feed_opmenu_add" type="id">feed_opmenu_add</item>
     <item name="feed_opmenu_opendir" type="id">feed_opmenu_opendir</item>
     <item name="feed_opmenu_setting" type="id">feed_opmenu_setting</item>
+    <item name="feed_mgr_subscribe_dlg_edittext" type="id">feed_mgr_subscribe_dlg_edittext</item>
+    <item name="feed_mgr_subscribe_dlg_qrbtn" type="id">feed_mgr_subscribe_dlg_qrbtn</item>
 </resources>

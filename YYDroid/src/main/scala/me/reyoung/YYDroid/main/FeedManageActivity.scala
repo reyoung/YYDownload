@@ -34,19 +34,7 @@ class FeedManageActivity extends OrmLiteBaseActivity[DatabaseUtil]  with LogTag{
 //    val input = new EditText(this)
     item.getItemId match {
       case R.id.feed_opmenu_add => {
-        new AlertDialog.Builder(FeedManageActivity.this)
-          .setTitle("Subscribe")
-          .setMessage("Input The Subscribe URL")
-        .setView(this.getLayoutInflater.inflate(R.layout.feed_mgr_subscribe_dlg,null))
-        .setPositiveButton("OK",new OnClickListener {
-          def onClick(p1: DialogInterface, p2: Int) {
-            val txt = findViewById(R.id.feed_mgr_subscribe_dlg_edittext).asInstanceOf[EditText].getText.toString
-            Log.d(LogTag,"Wanna to Subscribe "+txt)
-          }
-        })
-        .setNegativeButton("Cancel", new OnClickListener {
-          def onClick(p1: DialogInterface, p2: Int) {}
-        }).show()
+        SubscribeDlg.CallMe(this,this.onNewSubscribeURLRetired)
       }
       case _ => {
 
@@ -54,4 +42,9 @@ class FeedManageActivity extends OrmLiteBaseActivity[DatabaseUtil]  with LogTag{
     }
     true
   }
+
+  def onNewSubscribeURLRetired(url:String){
+    Log.d(LogTag,"On New Subscribe URL Retired "+url)
+  }
+
 }

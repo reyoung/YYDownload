@@ -3,13 +3,13 @@ package me.reyoung.YYDroid.main
 import me.reyoung.YYDroid.util.{DatabaseUtil, LogTag}
 import android.os.Bundle
 import android.util.Log
-import android.app.Activity
 import me.reyoung.R
 import android.widget.Button
 import android.view.View.OnClickListener
 import android.view.View
-import android.content.{Context, Intent}
+import android.content.Intent
 import com.j256.ormlite.android.apptools.OrmLiteBaseActivity
+import net.sourceforge.zbar.ImageScanner
 
 /**
  * Created with IntelliJ IDEA.
@@ -34,6 +34,8 @@ class MainActivity extends OrmLiteBaseActivity[DatabaseUtil] with LogTag{
         /**
          * @todo QRCode Scan
          */
+        val scanner = new ImageScanner
+        Log.d(LogTag,"The Image Scanner is "+scanner)
       }
     } )
 
@@ -41,6 +43,7 @@ class MainActivity extends OrmLiteBaseActivity[DatabaseUtil] with LogTag{
     DM.setOnClickListener(new OnClickListener {
       def onClick(view: View) {
         Log.d(LogTag,"On Download Management Click")
+
 
         /**
          * @todo Download Management Redirect

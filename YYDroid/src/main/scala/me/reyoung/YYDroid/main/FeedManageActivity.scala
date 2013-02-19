@@ -34,16 +34,7 @@ class FeedManageActivity extends OrmLiteBaseActivity[DatabaseUtil]  with LogTag{
 //    val input = new EditText(this)
     item.getItemId match {
       case R.id.feed_opmenu_add => {
-        val url = SubscribeDlgActivity.CallMe(this)
-        if (url!=null){
-          /**
-           * Add to database
-           */
-        } else {
-          /**
-           * Show Toast
-           */
-        }
+        SubscribeDlg.CallMe(this,this.onNewSubscribeURLRetired)
       }
       case _ => {
 
@@ -51,4 +42,9 @@ class FeedManageActivity extends OrmLiteBaseActivity[DatabaseUtil]  with LogTag{
     }
     true
   }
+
+  def onNewSubscribeURLRetired(url:String){
+    Log.d(LogTag,"On New Subscribe URL Retired "+url)
+  }
+
 }

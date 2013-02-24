@@ -27,7 +27,6 @@ object SubscribeDlg {
     )
     val qrBtn = view.findViewById(R.id.feed_mgr_subscribe_dlg_qrbtn).asInstanceOf[Button]
     val txtEdit = view.findViewById(R.id.feed_mgr_subscribe_dlg_edittext).asInstanceOf[EditText]
-//    var url:String = null
     dlg.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener {
       def onClick(p1: DialogInterface, p2: Int) {
         callback(txtEdit.getText.toString)
@@ -47,10 +46,3 @@ object SubscribeDlg {
     dlg.show()
   }
 }
-//class SubscribeDlg(ctx:Activity) extends android.app.Dialog(ctx){
-//
-//  override def onCreate(bundle:Bundle){
-//    super.onCreate(bundle)
-//    this.setContentView(R.layout.feed_mgr_subscribe_dlg)
-//  }
-//}

@@ -9,7 +9,7 @@ import android.view.View.OnClickListener
 import android.view.View
 import android.content.Intent
 import com.j256.ormlite.android.apptools.OrmLiteBaseActivity
-import net.sourceforge.zbar.ImageScanner
+
 
 /**
  * Created with IntelliJ IDEA.
@@ -34,8 +34,9 @@ class MainActivity extends OrmLiteBaseActivity[DatabaseUtil] with LogTag{
         /**
          * @todo QRCode Scan
          */
-        val scanner = new ImageScanner
-        Log.d(LogTag,"The Image Scanner is "+scanner)
+        QRCodeActivity.CallMe(act,(url)=>{
+          Log.d(LogTag,"URL Fetched "+url)
+        })
       }
     } )
 

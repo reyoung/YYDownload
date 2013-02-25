@@ -73,6 +73,25 @@ trait HttpUtil {
     msg
   }
   final protected def retirePageDom(url:String):NodeSeq = this.retirePageDom(new URL(url))
+  final protected def retirePageXML(url:URL):NodeSeq = {
+    var conn:HttpURLConnection=null
+    var msg:NodeSeq = null
+    try{
+      conn = url.openConnection().asInstanceOf[HttpURLConnection]
+      conn.setRequestMethod("GET")
+      val code = conn.getResponseCode
+      if (code>=200 && code <400) {
+        val is = conn.getInputStream
+        msg = scala.xml.XML.load(is)
+      }
+    }finally{
+      if(conn!=null)
+        conn.disconnect()
+    }
+    msg
+  }
+  final protected def retirePageXML(url:String):NodeSeq =
+    this.retirePageXML(new URL(url))
   final protected def retirePageString(url:URL):String = {
     var conn:HttpURLConnection =null
     var msg:String = null
@@ -99,7 +118,24 @@ trait HttpUtil {
     }
     msg
   }
+
   final protected def retirePageString(url:String):String = this.retirePageString(new URL(url))
+  final protected def retirePageStatus(url:URL):Int = {
+    var conn:HttpURLConnection = null
+    var retv = 600
+    try {
+      conn = url.openConnection().asInstanceOf[HttpURLConnection]
+      conn.setRequestMethod("GET")
+      retv = conn.getResponseCode
+    } finally {
+      if(conn!=null){
+        conn.disconnect()
+      }
+    }
+    retv
+  }
+  final protected def retirePageStatus(url:String):Int =
+    this.retirePageStatus(new URL(url))
 }
 
 trait IParseResult{

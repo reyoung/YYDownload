@@ -1,6 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module org.jetbrains.idea.maven.project.MavenProjectsManager.isMavenModule="true" type="JAVA_MODULE" version="4">
   <component name="FacetManager">
+    <facet type="scala" name="Scala">
+      <configuration>
+        <option name="compilerLibraryLevel" value="Project" />
+        <option name="compilerLibraryName" value="Maven: org.scala-lang:scala-compiler-bundle:2.9.1" />
+        <option name="vmOptions" value="" />
+      </configuration>
+    </facet>
     <facet type="android" name="Android">
       <configuration>
         <option name="GEN_FOLDER_RELATIVE_PATH_APT" value="/target/generated-sources/r" />
@@ -8,7 +15,7 @@
         <option name="MANIFEST_FILE_RELATIVE_PATH" value="/AndroidManifest.xml" />
         <option name="RES_FOLDER_RELATIVE_PATH" value="/res" />
         <option name="ASSETS_FOLDER_RELATIVE_PATH" value="/assets" />
-        <option name="LIBS_FOLDER_RELATIVE_PATH" value="/src/main/native" />
+        <option name="LIBS_FOLDER_RELATIVE_PATH" value="/libs" />
         <option name="USE_CUSTOM_APK_RESOURCE_FOLDER" value="false" />
         <option name="CUSTOM_APK_RESOURCE_FOLDER" value="/target/generated-sources/combined-resources/res" />
         <option name="USE_CUSTOM_COMPILER_MANIFEST" value="false" />
@@ -29,21 +36,14 @@
         <additionalNativeLibs />
       </configuration>
     </facet>
-    <facet type="scala" name="Scala">
-      <configuration>
-        <option name="compilerLibraryLevel" value="Project" />
-        <option name="compilerLibraryName" value="Maven: org.scala-lang:scala-compiler-bundle:2.9.1" />
-        <option name="vmOptions" value="" />
-      </configuration>
-    </facet>
   </component>
   <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_6" inherit-compiler-output="false">
     <output url="file://$MODULE_DIR$/target/classes" />
     <output-test url="file://$MODULE_DIR$/target/test-classes" />
     <content url="file://$MODULE_DIR$">
-      <sourceFolder url="file://$MODULE_DIR$/target/generated-sources/r" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/main/java" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/main/scala" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/target/generated-sources/r" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/target/classes" />
       <excludeFolder url="file://$MODULE_DIR$/target/generated-sources/combined-assets" />
       <excludeFolder url="file://$MODULE_DIR$/target/generated-sources/combined-resources" />

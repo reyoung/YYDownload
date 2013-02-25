@@ -9,6 +9,7 @@ import android.view.View.OnClickListener
 import android.view.View
 import android.content.Intent
 import com.j256.ormlite.android.apptools.OrmLiteBaseActivity
+//import me.reyoung.YYDroid.event.QRCodeCallback
 
 
 /**
@@ -18,7 +19,7 @@ import com.j256.ormlite.android.apptools.OrmLiteBaseActivity
  * Time: 2:11 PM
  * To change this template use File | Settings | File Templates.
  */
-class MainActivity extends OrmLiteBaseActivity[DatabaseUtil] with LogTag{
+class MainActivity extends OrmLiteBaseActivity[DatabaseUtil] with QRCodeCallback with LogTag{
 
 
   override def onCreate(bundle:Bundle){
@@ -30,13 +31,7 @@ class MainActivity extends OrmLiteBaseActivity[DatabaseUtil] with LogTag{
     NewQRCode.setOnClickListener(new OnClickListener{
       def onClick(view: View) {
         Log.d(LogTag,"On QR Code Click")
-
-        /**
-         * @todo QRCode Scan
-         */
-        QRCodeActivity.CallMe(act,(url)=>{
-          Log.d(LogTag,"URL Fetched "+url)
-        })
+        QRCodeActivity.CallMe(act)
       }
     } )
 
@@ -69,5 +64,9 @@ class MainActivity extends OrmLiteBaseActivity[DatabaseUtil] with LogTag{
         Log.d(LogTag,"On About Me Click")
       }
     })
+  }
+
+  protected def onQRCodeScan(url: String) {
+    Log.d(LogTag,"Retrieve URL "+url)
   }
 }

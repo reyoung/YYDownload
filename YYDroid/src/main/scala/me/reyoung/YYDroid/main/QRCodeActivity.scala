@@ -11,7 +11,6 @@ import android.view.{SurfaceHolder, SurfaceView}
 import android.hardware.Camera
 import me.reyoung.R
 import android.widget.FrameLayout
-import android.os
 
 /**
  * Created with IntelliJ IDEA.
@@ -21,27 +20,31 @@ import android.os
  * To change this template use File | Settings | File Templates.
  */
 
-class QRCodeCallback(method:(String)=>Unit) extends Function[String,Unit] with Serializable{
-  def apply(v1: String) {
-    method(v1)
+trait QRCodeCallback extends Activity with LogTag{
+  protected override def onActivityResult(requestCode:Int,status:Int,data:Intent){
+    super.onActivityResult(requestCode,status,data)
+    requestCode match {
+      case QRCodeActivity.REQUEST_ID =>{
+        Log.d(LogTag,"QR Code Founded")
+        val url = data.getExtras.getString("url")
+        this.onQRCodeScan(url)
+      }
+      case _ =>{}
+    }
   }
+  protected def onQRCodeScan(url:String)
 }
-
 object QRCodeActivity extends LogTag {
+  val REQUEST_ID=1
 
-  private def CallMe(atv:Activity,callback:QRCodeCallback):Unit = {
+  def CallMe(atv:QRCodeCallback){
     Log.d(LogTag,"During CallMe..")
 
     val intent = new Intent()
     intent.setClass(atv,classOf[QRCodeActivity])
-    intent.putExtra("callback",callback)
-    atv.startActivity(intent)
+    atv.startActivityForResult(intent,REQUEST_ID)
 
     Log.d(LogTag,"Exit CallMe..")
-    null
-  }
-  def CallMe(atv:Activity, callback:(String)=>Unit):Unit = {
-    this.CallMe(atv,new QRCodeCallback(callback) )
   }
 
   def getCameraInstance()= try {
@@ -62,12 +65,12 @@ class QRCodeActivity extends OrmLiteBaseActivity[DatabaseUtil] with LogTag with 
     }
   }
   var scanner:ImageScanner = null
-  var callback:QRCodeCallback = null
+//  var callback:QRCodeCallback = null
 
   override def onCreate(bundle:Bundle){
     super.onCreate(bundle)
     this.setContentView(R.layout.qr_code_activity)
-    callback  = bundle.getSerializable("callback").asInstanceOf[QRCodeCallback]
+//    callback  = getIntent.getExtras.getSerializable("callback").asInstanceOf[QRCodeCallback]
     Log.d(LogTag,"On QRCodeActivity Created")
     scanner = new ImageScanner
     mCamera = QRCodeActivity.getCameraInstance()
@@ -91,7 +94,9 @@ class QRCodeActivity extends OrmLiteBaseActivity[DatabaseUtil] with LogTag with 
         val symbol = symb.asInstanceOf[net.sourceforge.zbar.Symbol]
         if (symbol.getType == net.sourceforge.zbar.Symbol.QRCODE){
           Log.d(LogTag,"Founded QR Code "+symbol.getData)
-          callback(symbol.getData)
+          val intent = this.getIntent
+          intent.putExtra("url",symbol.getData)
+          this.setResult(Activity.RESULT_OK,intent)
           this.finish()
         } else {
           Log.d(LogTag,"WTF Symbol Type "+symbol.getType)

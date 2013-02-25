@@ -99,7 +99,24 @@ trait HttpUtil {
     }
     msg
   }
+
   final protected def retirePageString(url:String):String = this.retirePageString(new URL(url))
+  final protected def retirePageStatus(url:URL):Int = {
+    var conn:HttpURLConnection = null
+    var retv = 600
+    try {
+      conn = url.openConnection().asInstanceOf[HttpURLConnection]
+      conn.setRequestMethod("GET")
+      retv = conn.getResponseCode
+    } finally {
+      if(conn!=null){
+        conn.disconnect()
+      }
+    }
+    retv
+  }
+  final protected def retirePageStatus(url:String):Int =
+    this.retirePageStatus(new URL(url))
 }
 
 trait IParseResult{

@@ -12,8 +12,6 @@ import java.net.URL
 object ParserFactory {
   val Parsers = Array(YoukuListParser,YoukuParser)
 
-//  private def defaultProcess(a:Int,b:Int){}
-
   def parse(url:URL,definition:VideoDefinition.Type):Option[Any]={
     var retv:Any = null
 

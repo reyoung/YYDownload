@@ -1,6 +1,7 @@
 package me.reyoung.yydownload.yyparser
 
 import java.net.URL
+import xml.NodeSeq
 
 /**
  * Created with IntelliJ IDEA.
@@ -18,7 +19,10 @@ trait IAuthorSubscriber {
 
 trait IAuthorSubscriberResult {
   def Name():String
-  def Videos():Stream[String]
+  def VideoURLS():Stream[String]
+  def VideoResults(defi:VideoDefinition.Type):Stream[IParseResult]
+  def Limit():Int
+
 }
 
 trait IAuthorSubscribeException extends Exception

@@ -8,5 +8,5 @@
     <item name="feed_opmenu_opendir" type="id">feed_opmenu_opendir</item>
     <item name="feed_opmenu_setting" type="id">feed_opmenu_setting</item>
     <item name="feed_mgr_subscribe_dlg_edittext" type="id">feed_mgr_subscribe_dlg_edittext</item>
-    <item name="feed_mgr_subscribe_dlg_qrbtn" type="id">feed_mgr_subscribe_dlg_qrbtn</item><item name="subscribe_dlg_ok_btn" type="id">ok_btn</item><item name="subscribe_dlg_cancle_btn" type="id">cancle_btn</item>
+    <item name="feed_mgr_subscribe_dlg_qrbtn" type="id">feed_mgr_subscribe_dlg_qrbtn</item><item name="subscribe_dlg_ok_btn" type="id">ok_btn</item><item name="subscribe_dlg_cancle_btn" type="id">cancle_btn</item><item name="qr_code_activity_camera_frame" type="id">qr_code_activity_camera_frame</item>
 </resources>

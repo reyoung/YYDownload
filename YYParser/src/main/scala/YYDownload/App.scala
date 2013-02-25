@@ -8,6 +8,8 @@ import java.net.URL
  *
  */
 object MainApp extends  App{
-  val result = YoukuAuthorSubscriber.parse("http://i.youku.com/u/UMTE0NDEzOTky")
+  val result = ParserFactory.parse("http://i.youku.com/u/UMTE0NDEzOTky"
+      ,VideoDefinition.NORMAL)
+  println(result)
 
 }

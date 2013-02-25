@@ -19,10 +19,6 @@ object YoukuAuthorSubscriber extends IAuthorSubscriber with HttpUtil{
     val uid = this.getUidByURL(url)
     new XMLSubscribeResult {
       this.setURL("http://www.youku.com/user/rss/id/"+uid)
-//      println(XML)
-      this.VideoResults(VideoDefinition.NORMAL).foreach( r =>{
-        println(r.getTitle)
-      })
 
 
       def VideoURLS(): Stream[String] = {

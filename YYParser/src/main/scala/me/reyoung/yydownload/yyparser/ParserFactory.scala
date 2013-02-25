@@ -10,7 +10,7 @@ import java.net.URL
  * To change this template use File | Settings | File Templates.
  */
 object ParserFactory {
-  val Parsers = Array(YoukuListParser,YoukuParser)
+  val Parsers = Array(YoukuListParser,YoukuParser,YoukuAuthorSubscriber)
 
   def parse(url:URL,definition:VideoDefinition.Type):Option[Any]={
     var retv:Any = null
@@ -23,6 +23,9 @@ object ParserFactory {
           }
           case list_parser:IListParser => {
             list_parser.parse(url,definition)
+          }
+          case subscribe:IAuthorSubscriber =>{
+            subscribe.parse(url)
           }
           case _ => null
         }

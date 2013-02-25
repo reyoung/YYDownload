@@ -67,6 +67,28 @@ object ParserFactory {
     = this.parseVideo(new URL(url), definition)
 
 
+  def parseSubscribe(url:URL):Option[IAuthorSubscriberResult] = {
+    var retv:IAuthorSubscriberResult = null
+    for (p <- Parsers if retv == null) {
+      retv = p match {
+        case parser:IAuthorSubscriber => try {
+          parser.parse(url)
+        } catch {
+          case _ => {null}
+        }
+        case _ => {null}
+      }
+    }
+    if (retv == null)
+      None
+    else
+      Some(retv)
+  }
+
+  final def parseSubscribe(url:String):Option[IAuthorSubscriberResult] = {
+    this.parseSubscribe(new URL(url))
+  }
+
   def parseList(url:URL,definition:VideoDefinition.Type)
     :Option[IListParseResult] = {
     var retv:IListParseResult = null

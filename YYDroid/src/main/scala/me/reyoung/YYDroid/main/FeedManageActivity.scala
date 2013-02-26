@@ -6,7 +6,8 @@ import me.reyoung.R
 import android.view.{MenuItem, Menu}
 import com.j256.ormlite.android.apptools.OrmLiteBaseActivity
 import android.util.Log
-import me.reyoung.yydownload.yyparser.ParserFactory
+import me.reyoung.YYDroid.yydownload.{AndroidParserFactory, AndYoukuAuthorSubscriber}
+import android.widget.Toast
 
 /**
  * Created with IntelliJ IDEA.
@@ -49,13 +50,12 @@ class FeedManageActivity extends OrmLiteBaseActivity[DatabaseUtil]
 
   protected def onSubscribeResult(url: String) {
     Log.d(LogTag,"On Subscribe URL "+url)
-    val result = ParserFactory.parseSubscribe(url)
-    if(result.isDefined) {
-      Log.d(LogTag,"URL can be subscribed")
+
+    val result = AndroidParserFactory.parseSubscribe(url)
+    if (result!=null){
+      // Append Subscribe
     } else {
-      /**
-       * @todo Show Toast, this URL cannot be subscribed
-       */
+      Toast.makeText(this,R.string.subscribe_fails,Toast.LENGTH_LONG).show()
     }
   }
 }

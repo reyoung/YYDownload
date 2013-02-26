@@ -1,6 +1,6 @@
 package me.reyoung.YYDroid.main
 
-import me.reyoung.YYDroid.util.{DatabaseUtil, LogTag}
+import me.reyoung.YYDroid.util.{SubscribeTrait, DatabaseUtil, LogTag}
 import android.os.Bundle
 import me.reyoung.R
 import android.view.{MenuItem, Menu}
@@ -17,6 +17,7 @@ import android.widget.Toast
  * To change this template use File | Settings | File Templates.
  */
 class FeedManageActivity extends OrmLiteBaseActivity[DatabaseUtil]
+  with SubscribeTrait
   with SubscribeDlgCallback
   with LogTag
 {
@@ -50,12 +51,6 @@ class FeedManageActivity extends OrmLiteBaseActivity[DatabaseUtil]
 
   protected def onSubscribeResult(url: String) {
     Log.d(LogTag,"On Subscribe URL "+url)
-
-    val result = AndroidParserFactory.parseSubscribe(url)
-    if (result!=null){
-      // Append Subscribe
-    } else {
-      Toast.makeText(this,R.string.subscribe_fails,Toast.LENGTH_LONG).show()
-    }
+    this.subscribeURL(url)
   }
 }

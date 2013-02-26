@@ -39,11 +39,11 @@
             <artifactId>htmlparser</artifactId>
             <version>1.4</version>
         </dependency>
-        <dependency>
-            <groupId>com.github.axet</groupId>
-            <artifactId>wget</artifactId>
-            <version>1.2.6</version>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>com.github.axet</groupId>-->
+            <!--<artifactId>wget</artifactId>-->
+            <!--<version>1.2.6</version>-->
+        <!--</dependency>-->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>

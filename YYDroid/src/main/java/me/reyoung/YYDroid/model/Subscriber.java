@@ -14,7 +14,7 @@ import com.j256.ormlite.table.DatabaseTable;
 public class Subscriber {
     @DatabaseField(generatedId = true,allowGeneratedIdInsert = false)
     private int Id;
-    @DatabaseField(canBeNull = false,width=255)
+    @DatabaseField(canBeNull = false,width=255, unique = true)
     private String Url;
 
     public int getId() {

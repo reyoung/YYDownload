@@ -13,7 +13,7 @@ import java.sql.SQLException;
 
 public class DatabaseUtil extends OrmLiteSqliteOpenHelper {
     static final private String DATABASE_NAME= "YYDroid.db";
-    static final private int DATABASE_VERSION=2;
+    static final private int DATABASE_VERSION=3;
     static final private Class TABLES[] = {
             Subscriber.class
     };

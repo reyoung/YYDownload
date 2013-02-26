@@ -37,6 +37,38 @@
             <artifactId>zbar</artifactId>
             <version>0.1.0</version>
         </dependency>
+        <dependency>
+            <groupId>me.reyoung</groupId>
+            <artifactId>YYParser</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>android</artifactId>
+                    <groupId>android</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>nu.validator.htmlparser</groupId>-->
+            <!--<artifactId>htmlparser</artifactId>-->
+            <!--<version>1.4</version>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+            <!--<groupId>net.sourceforge.jchardet</groupId>-->
+            <!--<artifactId>jchardet</artifactId>-->
+            <!--<version>1.0</version>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+            <!--<groupId>com.ibm.icu</groupId>-->
+            <!--<artifactId>icu4j</artifactId>-->
+            <!--<version>50.1.1</version>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+            <!--<groupId>xom</groupId>-->
+            <!--<artifactId>xom</artifactId>-->
+            <!--<version>1.2.5</version>-->
+        <!--</dependency>-->
+
         <!--<dependency>-->
             <!--<groupId>org.apache.cordova</groupId>-->
             <!--<artifactId>cordova</artifactId>-->

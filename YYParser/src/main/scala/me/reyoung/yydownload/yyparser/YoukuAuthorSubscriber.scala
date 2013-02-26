@@ -14,7 +14,7 @@ import xml.NodeSeq
  * Time: 4:11 PM
  * To change this template use File | Settings | File Templates.
  */
-object YoukuAuthorSubscriber extends IAuthorSubscriber with HttpUtil{
+class YoukuAuthorSubscriber extends IAuthorSubscriber with HttpUtil{
   def parse(url: URL): IAuthorSubscriberResult = {
     val uid = this.getUidByURL(url)
     new XMLSubscribeResult {
@@ -56,6 +56,7 @@ object YoukuAuthorSubscriber extends IAuthorSubscriber with HttpUtil{
       }
     }
   }
+  protected def base64(str:String) =new BASE64Decoder().decodeBuffer(str)
 
   private def getUidByURL(url:URL) = {
     val status = this.retirePageStatus(url)
@@ -65,7 +66,7 @@ object YoukuAuthorSubscriber extends IAuthorSubscriber with HttpUtil{
       val rawUid = urlStr.substring(urlStr.lastIndexOf('/')+1)
 
       if (rawUid.head=='U'){
-        val uidStr = new BASE64Decoder().decodeBuffer(rawUid.tail)
+        val uidStr = base64(rawUid.tail)
         var uid = 0
         uidStr.foreach((b)=>{
           uid *= 10
